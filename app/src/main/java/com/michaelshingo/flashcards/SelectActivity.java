@@ -44,7 +44,8 @@ public class SelectActivity extends AppCompatActivity {
 
                 String name = "";
                 FlashcardSet flashcardSet = new FlashcardSet(name);
-                /*
+                //creating database here
+                // you need to associate each parameter with a value in the FlashcardSet and see if you can add an arraylist or not....
                 DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
                 boolean success = databaseHelper.addOne(flashcardSet);
                 Toast.makeText(SelectActivity.this, "Success = " + success, Toast.LENGTH_SHORT).show();*/

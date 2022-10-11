@@ -12,4 +12,19 @@ public class FlashcardSet {
     }
 
 
+    public ArrayList<Flashcard> getFlashcardSet() {
+        return flashcardSet;
+    }
+
+    public void setFlashcardSet(ArrayList<Flashcard> flashcardSet) {
+        this.flashcardSet = flashcardSet;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
