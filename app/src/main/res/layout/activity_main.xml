@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/outerLayout"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="150dp"
+    android:layout_marginBottom="150dp"
+    android:layout_marginLeft="50dp"
+    android:layout_marginRight="50dp"
+    android:id="@+id/flashcard"
+        android:outlineAmbientShadowColor="@color/teal_700"
+        android:outlineSpotShadowColor="@color/teal_700">
+
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:text="Placeholder for the definition of the term. Lorem the ipsum and things. so we can see how it fills the flashcard."-->
+<!--            android:gravity="center"-->
+<!--            android:layout_margin="25dp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:id="@+id/flashcardText"-->
+<!--            />-->
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Placeholder for the definition of the term. Lorem the ipsum and things. so we can see how it fills the flashcard."
+            android:layout_gravity="bottom"
+            android:layout_margin="25dp"
+            android:textStyle="bold"
+
+
+            android:id="@+id/flashcardText"/>
+<!--            android:focusable="false"-->
+
+
+
+    </androidx.cardview.widget.CardView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp"
+        android:gravity="center"
+        android:clipToPadding="false"
+        >
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/btn_edit"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_add"
+            android:backgroundTint="@color/green"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/ic_add"
+            />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_edit"
+            android:backgroundTint="@color/yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_toStartOf="@+id/btn_delete"
+            android:src="@drawable/ic_edit"/>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_delete"
+            android:backgroundTint="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/btn_add"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_delete"/>
+
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
+</RelativeLayout>
