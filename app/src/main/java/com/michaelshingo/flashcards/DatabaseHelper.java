@@ -18,10 +18,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //for first time you try to access the database, must create new database here
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FLASHCARD_SET + " FLASHCARDSET)";
-        db.execSQL(createTableStatement);
+        //String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FLASHCARD_SET + " FLASHCARDSET)";
+        //db.execSQL(createTableStatement);
 
     }
 
@@ -35,7 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues(); //associative array, pairs of values
         // you don't need ID because it's auto-increment
-        cv.put(COLUMN_FLASHCARD_SET, flashcardSet);
+        //cv.put(COLUMN_FLASHCARD_SET,);
 
         long insert = db.insert(FLASHCARD_TABLE, null, cv);//null column hack has to do with inserting empty rows...which you can't have in SQL
         if (insert == -1){

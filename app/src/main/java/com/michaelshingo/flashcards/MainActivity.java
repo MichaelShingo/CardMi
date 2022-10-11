@@ -8,6 +8,7 @@ import androidx.cardview.widget.CardView;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
         flashcardText = findViewById(R.id.flashcardText);
         flashcard = findViewById(R.id.flashcard);
         RelativeLayout outerLayout = findViewById(R.id.outerLayout);
+
+
+
+        // you need to have the SelectActivity pass the name of the flashcard set selected to this activity
+        //pass that name to SharedPreferences below
+        //exact all data into an ArrayList or something, and have it show in the flashcards
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("NameofFlashcardSet", Context.MODE_PRIVATE);
+        String name = sp.getString("name"); //WORKING ON THIS......
 
         i = 0;
 
