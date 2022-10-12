@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.IOException;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,14 @@ public class SelectActivity extends AppCompatActivity {
     private FloatingActionButton tempNav;
     private ListView flashcardSetList;
 
+    private void updateListView(){
+        //TODO you need to pull flashcardset names from database, decode them, and put them in the list
+        flashcardSetList = findViewById(R.id.flashcardSetList);
+        ArrayList<String> list = new ArrayList<String>();
+        ArrayAdapter arrayAdapter = new ArrayAdapter(getApplication(), android.
+                R.layout.simple_list_item_1, list);
+        flashcardSetList.setAdapter(arrayAdapter);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -35,26 +44,9 @@ public class SelectActivity extends AppCompatActivity {
 
         FloatingActionButton btn_add = findViewById(R.id.addSet);
         FloatingActionButton tempNav = findViewById(R.id.tempNav);
-        flashcardSetList = findViewById(R.id.flashcardSetList);
-        //create a list of the names of all the sharedpreferences
-
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("Item 1");
-        list.add("Item 2");
-        list.add("Item 3");
-
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getApplication(), android.
-                R.layout.simple_list_item_1, list);
-
-        flashcardSetList.setAdapter(arrayAdapter);
 
 
-
-
-
-
-
-
+        updateListView();
 
         //ON CLICK LISTENERS
         
@@ -68,8 +60,28 @@ public class SelectActivity extends AppCompatActivity {
                 alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        sp = getSharedPreferences(nameText.getText().toString(), Context.MODE_PRIVATE); //creates the shared preferences (set of flashcards)
-                        Toast.makeText(SelectActivity.this, "Created new flashcard set.", Toast.LENGTH_SHORT);
+                        //TODO add the serialized flashcardSet to the database and have it display in listview
+                        //TODO when it is clicked start MainActivity and display that FlashcardSet
+
+                        //NEEDS TO CHECK IF NAME ALREADY EXISTS OR IS EMPTY OR CONTAINS INVALID CHARACTERS
+                        FlashcardSet flashcardSet = new FlashcardSet(nameText.getText().toString());
+                        String encodedFlashcardSet = new String("Untitled");
+
+                        try {
+                            encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
+                            Toast.makeText(SelectActivity.this, "Created new flashcard set.", Toast.LENGTH_SHORT).show();
+                            FlashcardSet decodedFlashcardSet = (FlashcardSet)FlashcardSetEncoder.fromString(encodedFlashcardSet);
+                        } catch (IOException e) {
+                            Toast.makeText(SelectActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        } catch (ClassNotFoundException e) {
+                            Toast.makeText(SelectActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                        DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
+                        boolean success = databaseHelper.addOne(encodedFlashcardSet);
+                        updateListView();
+
                     }
                 });
 
@@ -88,12 +100,8 @@ public class SelectActivity extends AppCompatActivity {
                 FlashcardSet flashcardSet = new FlashcardSet(name);
 
 
-                /*
-                //creating database here
-                // you need to associate each parameter with a value in the FlashcardSet and see if you can add an arraylist or not....
-                DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
-                boolean success = databaseHelper.addOne(flashcardSet);
-                Toast.makeText(SelectActivity.this, "Success = " + success, Toast.LENGTH_SHORT).show();*/
+
+
             }
         });
 

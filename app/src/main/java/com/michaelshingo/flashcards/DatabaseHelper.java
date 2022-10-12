@@ -11,18 +11,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String FLASHCARD_TABLE = "FLASHCARD_TABLE";
     public static final String COLUMN_FLASHCARD_SET = "FLASHCARD_SET";
-    public static final String COLUMN_ID = "COLUMN_ID";
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, "flashcard.db", null, 1);
     }
 
+
+
+
+
     //for first time you try to access the database, must create new database here
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FLASHCARD_SET + " FLASHCARDSET)";
-        //db.execSQL(createTableStatement);
+        String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FLASHCARD_SET + " TEXT)";
+        db.execSQL(createTableStatement);
 
     }
 
@@ -32,11 +35,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean addOne(FlashcardSet flashcardSet){
+    public boolean addOne(String encodedFlashcardSet){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues(); //associative array, pairs of values
         // you don't need ID because it's auto-increment
-        //cv.put(COLUMN_FLASHCARD_SET,);
+        cv.put(COLUMN_FLASHCARD_SET, encodedFlashcardSet);
 
         long insert = db.insert(FLASHCARD_TABLE, null, cv);//null column hack has to do with inserting empty rows...which you can't have in SQL
         if (insert == -1){

@@ -1,6 +1,8 @@
 package com.michaelshingo.flashcards;
 
-public class Flashcard {
+import java.io.Serializable;
+
+public class Flashcard implements Serializable {
 
     private String term;
     private String definition;
