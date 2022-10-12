@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         //pass that name to SharedPreferences below
         //exact all data into an ArrayList or something, and have it show in the flashcards
         SharedPreferences sp = getApplicationContext().getSharedPreferences("NameofFlashcardSet", Context.MODE_PRIVATE);
-        String name = sp.getString("name"); //WORKING ON THIS......
+        //String name = sp.getString("name"); //WORKING ON THIS......
 
         i = 0;
 
