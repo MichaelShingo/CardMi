@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,9 +35,10 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
     private CardView flashcard;
     private EditText flashcardText;
-    private int i;
     private RelativeLayout outerLayout;
     private FloatingActionButton btn_add, btn_edit, btn_delete, btn_back;
+    private FlashcardSet flashcardSet = new FlashcardSet("");
+    private int i = flashcardSet.length() - 1;
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -64,37 +66,27 @@ public class MainActivity extends AppCompatActivity {
         flashcard = findViewById(R.id.flashcard);
         RelativeLayout outerLayout = findViewById(R.id.outerLayout);
 
-
-
-        // you need to have the SelectActivity pass the name of the flashcard set selected to this activity
-        //pass that name to SharedPreferences below
-        //exact all data into an ArrayList or something, and have it show in the flashcards
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("NameofFlashcardSet", Context.MODE_PRIVATE);
-        //String name = sp.getString("name"); //WORKING ON THIS......
-
-        i = 0;
-
-
-
-
-
-
-
-
+        //RETRIEVES FLASHCARD SET FORM SELECTACIVITY
+        Bundle bundle = getIntent().getExtras();
+        String encodedFlashcardSet = bundle.getString("set");
+        try {
+            flashcardSet = (FlashcardSet) FlashcardSetEncoder.fromString(encodedFlashcardSet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
 
         //ON CLICK LISTENERS
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //it should show a popup where the user can enter term and definition in separate fields
-                //then field.getText.toString() and add it to the database....
-
+                //TODO when adding flashcard, add it to the database
                 //EDIT BUTTON POP UP
                 AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 
                 alert.setTitle("New Flashcard");
-                alert.setMessage("Enter term and definition.");
                 LinearLayout addLayout = new LinearLayout(MainActivity.this);
                 addLayout.setOrientation(LinearLayout.VERTICAL);
                 final EditText term = new EditText(MainActivity.this);
@@ -110,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Flashcard flashcard = new Flashcard(term.getText().toString(), definition.getText().toString(), -1);
-
-
+                        flashcardSet.add(flashcard);
+                        i = flashcardSet.length() - 1;
+                        flashcardText.setText(flashcardSet.get(i).getTerm()); //shows last added term
+                        Toast.makeText(MainActivity.this, "i = " + i, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -119,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        //Toast.makeText(MainActivity.this, "cancelled", Toast.LENGTH_SHORT).show();
                     }
                 });
                 alert.show();
@@ -130,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO update database, bundle current set and pass to SelectActivity
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
                 //Toast.makeText(MainActivity.this, "Back Button Clicked", Toast.LENGTH_SHORT).show();
             }
@@ -154,63 +148,47 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
-                //USER DATA
-
-                ArrayList < ArrayList < String >> musicTheoryData = new ArrayList<>();
-        ArrayList<String> termDef = new ArrayList<>(
-                Arrays.asList("cadential 6/4", "2nd inversion I chord used before V"));
-
-        musicTheoryData.add(termDef);
-
-        termDef = new ArrayList<>(
-                Arrays.asList("modulation", "a change in key"));
-        musicTheoryData.add(termDef);
-
-        termDef = new ArrayList<>(
-                Arrays.asList("hexachordal combinatoriality", "When two hexachords used in a piece create a complete set of twelve pitches."));
-
-        musicTheoryData.add(termDef);
-
-
-        flashcardText.setText(musicTheoryData.get(i).get(i)); //shows first term
-
+        if (flashcardSet.length() != 0) {
+            flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
+        }
 
         //SWIPING FUNCTIONALITY
 
         flashcard.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
-
+            //TODO SOMETHING WITH THE INITIALIZABLE OF I IS CAUSING IT TO RESET AND THINGS
             public void onSwipeTop(){
-                flashcardText.setText(musicTheoryData.get(i).get(1));
-                Toast.makeText(MainActivity.this, "Swipe Top", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Swipe Top i = " + i, Toast.LENGTH_SHORT).show();
+                if (i < 0){
+                    i = flashcardSet.length() - 1;
+                }
+                flashcardText.setText(flashcardSet.get(i).getDefinition());
+
             }
 
             public void onSwipeRight(){
 
                 i--;
                 if (i < 0){
-                    i = musicTheoryData.size() - 1;
+                    i = flashcardSet.length() - 1;
                 }
-                flashcardText.setText(musicTheoryData.get(i).get(0));
-                Toast.makeText(MainActivity.this, "Swipe Right", Toast.LENGTH_SHORT).show();
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+                //Toast.makeText(MainActivity.this, "Swipe Right", Toast.LENGTH_SHORT).show();
 
             }
 
             public void onSwipeLeft() {
                 i++;
-                if (i > musicTheoryData.size() - 1){
+                if (i > flashcardSet.length() - 1){
                     i = 0;
                 }
-                flashcardText.setText(musicTheoryData.get(i).get(0));
-                Toast.makeText(MainActivity.this, "Swipe Left", Toast.LENGTH_SHORT).show();
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+                //Toast.makeText(MainActivity.this, "Swipe Left", Toast.LENGTH_SHORT).show();
 
             }
 
             public void onSwipeBottom() {
-                flashcardText.setText(musicTheoryData.get(i).get(0));
-                Toast.makeText(MainActivity.this, "Swipe Bottom", Toast.LENGTH_SHORT).show();
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+                //Toast.makeText(MainActivity.this, "Swipe Bottom", Toast.LENGTH_SHORT).show();
 
             }
 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -21,20 +22,67 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//Features to add: sorting, deleting, recycle bin for deleted flashcards
 public class SelectActivity extends AppCompatActivity {
-    private SharedPreferences sp; //but this should be accessible from other classes in this app
+
     private FloatingActionButton btn_add;
     private FloatingActionButton tempNav;
-    private ListView flashcardSetList;
+    private ListView listView;
+    private ArrayList<FlashcardSet> flashcardSetArray;
 
     private void updateListView(){
-        //TODO you need to pull flashcardset names from database, decode them, and put them in the list
-        flashcardSetList = findViewById(R.id.flashcardSetList);
-        ArrayList<String> list = new ArrayList<String>();
+        DatabaseHelper dataBaseHelper = new DatabaseHelper(SelectActivity.this);
+        ArrayList<String> encodedFlashcardSets = dataBaseHelper.getAll();
+        ArrayList<FlashcardSet> decodedFlashcardSets = new ArrayList<>();
+
+        for (String encodedStr:encodedFlashcardSets){
+            FlashcardSet decodedFlashcardSet = null;
+            try {
+                decodedFlashcardSet = (FlashcardSet) FlashcardSetEncoder.fromString(encodedStr);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            decodedFlashcardSets.add(decodedFlashcardSet);
+        }
+
+        ArrayList<String> allNames = new ArrayList<>();
+
+        //TODO this is no longer retrieving anything from the database??
+
+        for (FlashcardSet flashcardSet: decodedFlashcardSets){
+            if (flashcardSet != null) {
+                allNames.add(flashcardSet.getName());
+            }
+        }
+
+        listView = findViewById(R.id.flashcardSetList);
         ArrayAdapter arrayAdapter = new ArrayAdapter(getApplication(), android.
-                R.layout.simple_list_item_1, list);
-        flashcardSetList.setAdapter(arrayAdapter);
+                R.layout.simple_list_item_1, allNames);
+        listView.setAdapter(arrayAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                System.out.println(i);
+                //Toast.makeText(SelectActivity.this, decodedFlashcardSets.get(i).getName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(SelectActivity.this, MainActivity.class);
+                Bundle bundle = new Bundle();
+                String currentEncodedSet = null;
+                try {
+                    currentEncodedSet = FlashcardSetEncoder.toString(decodedFlashcardSets.get(i));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                bundle.putString("set", currentEncodedSet);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -46,7 +94,10 @@ public class SelectActivity extends AppCompatActivity {
         FloatingActionButton tempNav = findViewById(R.id.tempNav);
 
 
+        //POPULATE THE LISTVIEW
+
         updateListView();
+
 
         //ON CLICK LISTENERS
         
@@ -66,22 +117,15 @@ public class SelectActivity extends AppCompatActivity {
                         //NEEDS TO CHECK IF NAME ALREADY EXISTS OR IS EMPTY OR CONTAINS INVALID CHARACTERS
                         FlashcardSet flashcardSet = new FlashcardSet(nameText.getText().toString());
                         String encodedFlashcardSet = new String("Untitled");
-
                         try {
                             encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
-                            Toast.makeText(SelectActivity.this, "Created new flashcard set.", Toast.LENGTH_SHORT).show();
-                            FlashcardSet decodedFlashcardSet = (FlashcardSet)FlashcardSetEncoder.fromString(encodedFlashcardSet);
                         } catch (IOException e) {
-                            Toast.makeText(SelectActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                        } catch (ClassNotFoundException e) {
-                            Toast.makeText(SelectActivity.this, "Error", Toast.LENGTH_SHORT).show();
                             e.printStackTrace();
                         }
+
                         DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
                         boolean success = databaseHelper.addOne(encodedFlashcardSet);
                         updateListView();
-
                     }
                 });
 
@@ -92,16 +136,8 @@ public class SelectActivity extends AppCompatActivity {
                             }
                         });
                 alert.show();
-
-
-
-
                 String name = "";
                 FlashcardSet flashcardSet = new FlashcardSet(name);
-
-
-
-
             }
         });
 

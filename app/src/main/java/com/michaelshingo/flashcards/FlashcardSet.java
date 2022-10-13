@@ -12,13 +12,19 @@ public class FlashcardSet implements Serializable {
         flashcardList.add(flashcard);
     }
 
+    public Flashcard get(int index){
+        return flashcardList.get(index);
+    }
+
     public void remove(int index){
         flashcardList.remove(index);
     }
 
-    public Flashcard get(int index){
-        return flashcardList.get(index);
+    public int length(){
+        return flashcardList.size();
     }
+
+
 
     public FlashcardSet(String name) {
         this.name = name;
