@@ -17,30 +17,15 @@
         android:outlineAmbientShadowColor="@color/teal_700"
         android:outlineSpotShadowColor="@color/teal_700">
 
-<!--        <TextView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="Placeholder for the definition of the term. Lorem the ipsum and things. so we can see how it fills the flashcard."-->
-<!--            android:gravity="center"-->
-<!--            android:layout_margin="25dp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:id="@+id/flashcardText"-->
-<!--            />-->
 
-
-        <EditText
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Click the + icon to add a flashcard."
             android:layout_gravity="bottom"
             android:layout_margin="25dp"
             android:textStyle="bold"
-
-
             android:id="@+id/flashcardText"/>
-<!--            android:focusable="false"-->
-
-
 
     </androidx.cardview.widget.CardView>
 
@@ -91,14 +76,6 @@
             android:layout_marginStart="10dp"
             android:src="@drawable/ic_delete"/>
 
-
-
     </LinearLayout>
-
-
-
-
-
-
 
 </RelativeLayout>

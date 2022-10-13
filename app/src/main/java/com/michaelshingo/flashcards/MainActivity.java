@@ -34,22 +34,22 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private CardView flashcard;
-    private EditText flashcardText;
+    private TextView flashcardText;
     private RelativeLayout outerLayout;
     private FloatingActionButton btn_add, btn_edit, btn_delete, btn_back;
     private FlashcardSet flashcardSet = new FlashcardSet("");
-    private int i = flashcardSet.length() - 1;
+    private int i;
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
+//    public static void hideKeyboard(Activity activity) {
+//        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+//        //Find the currently focused view, so we can grab the correct window token from it.
+//        View view = activity.getCurrentFocus();
+//        //If no view currently has focus, create a new one, just so we can grab a window token from it
+//        if (view == null) {
+//            view = new View(activity);
+//        }
+//        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         btn_back = findViewById(R.id.btn_back);
         flashcardText = findViewById(R.id.flashcardText);
         flashcard = findViewById(R.id.flashcard);
+        i = 0;
         RelativeLayout outerLayout = findViewById(R.id.outerLayout);
 
         //RETRIEVES FLASHCARD SET FORM SELECTACIVITY
@@ -75,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }
+
+        //DISPLAY THE FIRST FLASHCARD IF NOT EMPTY
+        if (flashcardSet.length() != 0) {
+            flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
         }
 
 
@@ -100,18 +106,19 @@ public class MainActivity extends AppCompatActivity {
                 //CREATES NEW FLASHCARD
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(DialogInterface dialogInterface, int j) {
                         Flashcard flashcard = new Flashcard(term.getText().toString(), definition.getText().toString(), -1);
                         flashcardSet.add(flashcard);
                         i = flashcardSet.length() - 1;
+                        System.out.println("new flashcard, i is now: " + i);
                         flashcardText.setText(flashcardSet.get(i).getTerm()); //shows last added term
-                        Toast.makeText(MainActivity.this, "i = " + i, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "new flashhcard i = " + i, Toast.LENGTH_SHORT).show();
                     }
                 });
 
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(DialogInterface dialogInterface, int j) {
 
                     }
                 });
@@ -124,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO update database, bundle current set and pass to SelectActivity
+                //TODO ENCODE IT
+
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
                 //Toast.makeText(MainActivity.this, "Back Button Clicked", Toast.LENGTH_SHORT).show();
             }
@@ -132,48 +141,90 @@ public class MainActivity extends AppCompatActivity {
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "Delete Button Clicked", Toast.LENGTH_SHORT).show();
+                if (flashcardSet.length() == 0){
+                    Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    flashcardSet.remove(i);
+                    if (flashcardSet.length() == 0){
+                        i = 0;
+                        flashcardText.setText("Click the + icon to add a flashcard.");
+                        //TODO try not to hardcode this string....
+                    }
+                    else if (i > flashcardSet.length() - 1){
+                        i--;
+                        flashcardText.setText(flashcardSet.get(i).getTerm());
+                    }
+
+                }
             }
         });
 
         btn_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                flashcardText.setShowSoftInputOnFocus(true);
-                flashcardText.requestFocus(2);
-                //Toast.makeText(MainActivity.this, "Edit icon clicked.", Toast.LENGTH_SHORT).show();
 
+                //TODO what to do when there are no flashcards yet
+
+                if (flashcardSet.length() == 0){
+                    Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
+
+                }
+                else{
+                    Flashcard currentFlashcard = flashcardSet.get(i);
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+
+                    alert.setTitle("Edit Flashcard");
+                    LinearLayout editLayout = new LinearLayout(MainActivity.this);
+                    editLayout.setOrientation(LinearLayout.VERTICAL);
+                    final EditText term = new EditText(MainActivity.this);
+                    term.setText(currentFlashcard.getTerm());
+                    final EditText definition = new EditText(MainActivity.this);
+                    definition.setText(currentFlashcard.getDefinition());
+                    editLayout.addView(term);
+                    editLayout.addView(definition);
+                    alert.setView(editLayout);
+
+                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int j) {
+                            currentFlashcard.setTerm(term.getText().toString());
+                            currentFlashcard.setDefinition(definition.getText().toString());
+                            flashcardSet.update(i, currentFlashcard);
+                            flashcardText.setText(currentFlashcard.getTerm().toString());
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int j) {
+
+                        }
+                    });
+                    alert.show();
+                }
             }
         });
-
-
-
-        if (flashcardSet.length() != 0) {
-            flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
-        }
 
         //SWIPING FUNCTIONALITY
 
         flashcard.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
-            //TODO SOMETHING WITH THE INITIALIZABLE OF I IS CAUSING IT TO RESET AND THINGS
             public void onSwipeTop(){
                 Toast.makeText(MainActivity.this, "Swipe Top i = " + i, Toast.LENGTH_SHORT).show();
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
+                System.out.println("%%%%%%%%%%%% i = %%%%%%%%% " + i);
                 flashcardText.setText(flashcardSet.get(i).getDefinition());
-
             }
-
             public void onSwipeRight(){
-
                 i--;
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
                 flashcardText.setText(flashcardSet.get(i).getTerm());
                 //Toast.makeText(MainActivity.this, "Swipe Right", Toast.LENGTH_SHORT).show();
-
             }
 
             public void onSwipeLeft() {
@@ -201,16 +252,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        flashcardText.setShowSoftInputOnFocus((false));
-        outerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (flashcardText.getShowSoftInputOnFocus()){
-                    flashcardText.setShowSoftInputOnFocus(false);
-                    hideKeyboard(MainActivity.this);
-                }
-            }
-        });
+//        flashcardText.setShowSoftInputOnFocus((false));
+//        outerLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (flashcardText.getShowSoftInputOnFocus()){
+//                    flashcardText.setShowSoftInputOnFocus(false);
+//                    hideKeyboard(MainActivity.this);
+//                }
+//            }
+//        });
 
     }
 }

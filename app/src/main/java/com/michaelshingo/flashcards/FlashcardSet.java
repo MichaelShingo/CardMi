@@ -24,6 +24,10 @@ public class FlashcardSet implements Serializable {
         return flashcardList.size();
     }
 
+    public void update(int i, Flashcard flashcard){
+        flashcardList.set(i, flashcard);
+    }
+
 
 
     public FlashcardSet(String name) {
