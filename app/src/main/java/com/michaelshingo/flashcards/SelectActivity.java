@@ -77,6 +77,8 @@ public class SelectActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 bundle.putString("set", currentEncodedSet);
+                bundle.putInt("id", i); //this should put the id number of the clicked item
+                //but it could be a problem if you don't get the actual ID from the database
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -141,12 +143,12 @@ public class SelectActivity extends AppCompatActivity {
             }
         });
 
-        tempNav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SelectActivity.this, MainActivity.class));
-            }
-        });
+//        tempNav.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(SelectActivity.this, MainActivity.class));
+//            }
+//        });
 
         }
     }

@@ -15,6 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String FLASHCARD_TABLE = "FLASHCARD_TABLE";
     public static final String COLUMN_FLASHCARD_SET = "FLASHCARD_SET";
+    public static final String COLUMN_ID = "ID";
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, "flashcard.db", null, 1);
@@ -28,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FLASHCARD_SET + " TEXT)";
+        String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FLASHCARD_SET + " TEXT)";
         db.execSQL(createTableStatement);
 
     }
@@ -71,12 +72,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else{
             //do not add anything
-
         }
-
         cursor.close();
         db.close();
         return returnList;
 
+    }
+
+    public void update(int id, String encodedFlashcardSet){
+        //if it is found in the database, delete and return true
+        String idStr = Integer.toString(id);
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_FLASHCARD_SET, encodedFlashcardSet);
+        db.update(FLASHCARD_TABLE, cv, "_id = ?", new String[]{idStr});
+        db.close();
     }
 }
