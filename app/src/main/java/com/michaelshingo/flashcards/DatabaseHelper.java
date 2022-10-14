@@ -15,20 +15,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String FLASHCARD_TABLE = "FLASHCARD_TABLE";
     public static final String COLUMN_FLASHCARD_SET = "FLASHCARD_SET";
+    public static final String COLUMN_ID = "ID";
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, "flashcard.db", null, 1);
     }
 
-
-
-
-
-    //for first time you try to access the database, must create new database here
-
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FLASHCARD_SET + " TEXT)";
+        String createTableStatement = "CREATE TABLE " + FLASHCARD_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_FLASHCARD_SET + " TEXT)";
         db.execSQL(createTableStatement);
 
     }
@@ -79,4 +74,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return returnList;
 
     }
+
+    public void update(int id, String encodedFlashcardSet){
+        String idStr = Integer.toString(id + 1);
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_FLASHCARD_SET, encodedFlashcardSet);
+        //compare the "ID" column with the int we have from the parameters, converted to string....
+        db.update(FLASHCARD_TABLE, cv, "ID=?", new String[]{idStr}); //here the problem....
+        db.close();
+    }
+
+    public void delete(int id){
+        String idStr = Integer.toString(id + 1);
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        db.delete(FLASHCARD_TABLE, "ID=?", new String[]{idStr});
+        db.close();
+    }
+
 }

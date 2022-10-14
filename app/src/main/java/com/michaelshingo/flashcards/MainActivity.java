@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         //RETRIEVES FLASHCARD SET FORM SELECTACIVITY
         Bundle bundle = getIntent().getExtras();
         String encodedFlashcardSet = bundle.getString("set");
+        int listID = bundle.getInt("id");
         try {
             flashcardSet = (FlashcardSet) FlashcardSetEncoder.fromString(encodedFlashcardSet);
         } catch (IOException e) {
@@ -131,10 +132,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO update database, bundle current set and pass to SelectActivity
-                //TODO ENCODE IT
-
+                //TODO error here due to  datbase update
+                String updatedEncodedSet = null;
+                try {
+                    updatedEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+                databaseHelper.update(listID, updatedEncodedSet); //fix this!!!!!!!!!!!!!
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
-                //Toast.makeText(MainActivity.this, "Back Button Clicked", Toast.LENGTH_SHORT).show();
             }
         });
 

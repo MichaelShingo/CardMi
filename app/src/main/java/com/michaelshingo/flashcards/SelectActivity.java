@@ -30,6 +30,7 @@ public class SelectActivity extends AppCompatActivity {
     private FloatingActionButton tempNav;
     private ListView listView;
     private ArrayList<FlashcardSet> flashcardSetArray;
+    private FloatingActionButton btn_deleteSet;
 
     private void updateListView(){
         DatabaseHelper dataBaseHelper = new DatabaseHelper(SelectActivity.this);
@@ -77,6 +78,7 @@ public class SelectActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 bundle.putString("set", currentEncodedSet);
+                bundle.putInt("id", i); //this should put the id number of the clicked item
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -90,8 +92,9 @@ public class SelectActivity extends AppCompatActivity {
 
         //INSTANTIATION
 
-        FloatingActionButton btn_add = findViewById(R.id.addSet);
-        FloatingActionButton tempNav = findViewById(R.id.tempNav);
+        FloatingActionButton btn_add = findViewById(R.id.addSet); //name this variable better...
+        FloatingActionButton btn_deleteSet = findViewById(R.id.btn_deleteSet);
+        //FloatingActionButton tempNav = findViewById(R.id.tempNav);
 
 
         //POPULATE THE LISTVIEW
@@ -100,6 +103,19 @@ public class SelectActivity extends AppCompatActivity {
 
 
         //ON CLICK LISTENERS
+
+        btn_deleteSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
+                databaseHelper.delete(3);
+                //TODO create long press listener on listItem for delete function
+                //                //TODO for this you need to find a way to get the Database ID of the flashcardSet....
+                //TODO Same for when you pass bundle to MainActivity for updating function
+            }
+        });
+
+
         
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,12 +157,12 @@ public class SelectActivity extends AppCompatActivity {
             }
         });
 
-        tempNav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SelectActivity.this, MainActivity.class));
-            }
-        });
+//        tempNav.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                startActivity(new Intent(SelectActivity.this, MainActivity.class));
+//            }
+//        });
 
         }
     }
