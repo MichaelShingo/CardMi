@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         //RETRIEVES FLASHCARD SET FORM SELECTACIVITY
         Bundle bundle = getIntent().getExtras();
         String encodedFlashcardSet = bundle.getString("set");
-        //int listID = bundle.getInt("id");
+        int listID = bundle.getInt("id");
         try {
             flashcardSet = (FlashcardSet) FlashcardSetEncoder.fromString(encodedFlashcardSet);
         } catch (IOException e) {
@@ -120,25 +120,27 @@ public class MainActivity extends AppCompatActivity {
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int j) {
+
                     }
                 });
                 alert.show();
+
             }
         });
 
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //TODO update database, bundle current set and pass to SelectActivity
+                //TODO error here due to  datbase update
                 String updatedEncodedSet = null;
                 try {
                     updatedEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                //TODO update database, pass databaseid and encoded set to db.update method
                 DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
-                //databaseHelper.update(listID, updatedEncodedSet);
+                databaseHelper.update(listID, updatedEncodedSet); //fix this!!!!!!!!!!!!!
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
             }
         });
