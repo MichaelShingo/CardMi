@@ -5,6 +5,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,19 +27,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//Features to add: sorting, deleting, recycle bin for deleted flashcards
+//Features to add: sorting, recycle bin for deleted flashcards
 public class SelectActivity extends AppCompatActivity {
 
     private FloatingActionButton btn_add;
-    private FloatingActionButton tempNav;
     private ListView listView;
     private ArrayList<FlashcardSet> flashcardSetArray;
     private FloatingActionButton btn_deleteSet;
+    private ArrayList<String> encodedFlashcardSets;
+    private ArrayList<FlashcardSet> decodedFlashcardSets;
+    ArrayList<Integer> idArray;
 
     private void updateListView(){
-        DatabaseHelper dataBaseHelper = new DatabaseHelper(SelectActivity.this);
-        ArrayList<String> encodedFlashcardSets = dataBaseHelper.getAll();
-        ArrayList<FlashcardSet> decodedFlashcardSets = new ArrayList<>();
+        DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
+        encodedFlashcardSets = databaseHelper.getAll();
+        idArray = databaseHelper.getIDs();
+        decodedFlashcardSets = new ArrayList<>();
 
         for (String encodedStr:encodedFlashcardSets){
             FlashcardSet decodedFlashcardSet = null;
@@ -48,17 +55,13 @@ public class SelectActivity extends AppCompatActivity {
             }
             decodedFlashcardSets.add(decodedFlashcardSet);
         }
-
         ArrayList<String> allNames = new ArrayList<>();
-
-        //TODO this is no longer retrieving anything from the database??
-
         for (FlashcardSet flashcardSet: decodedFlashcardSets){
             if (flashcardSet != null) {
                 allNames.add(flashcardSet.getName());
             }
         }
-
+        System.out.println(allNames);
         listView = findViewById(R.id.flashcardSetList);
         ArrayAdapter arrayAdapter = new ArrayAdapter(getApplication(), android.
                 R.layout.simple_list_item_1, allNames);
@@ -67,22 +70,83 @@ public class SelectActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                System.out.println(i);
-                //Toast.makeText(SelectActivity.this, decodedFlashcardSets.get(i).getName(), Toast.LENGTH_SHORT).show();
+                //if you know the item position in the list (i), you can find get correspoding FlashcardSet in array
+                //then you can encode this and find it in the database and delete row....yes???
+                //TODO bundle the DATABASE ID NOT LIST ID
+                System.out.println(idArray + "i = " + i);
+
+                int currentID = idArray.get(i);
                 Intent intent = new Intent(SelectActivity.this, MainActivity.class);
                 Bundle bundle = new Bundle();
                 String currentEncodedSet = null;
                 try {
-                    currentEncodedSet = FlashcardSetEncoder.toString(decodedFlashcardSets.get(i));
+                    currentEncodedSet = FlashcardSetEncoder.toString(decodedFlashcardSets.get(i)); //IS THIS CORRECT???
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 bundle.putString("set", currentEncodedSet);
-                bundle.putInt("id", i); //this should put the id number of the clicked item
+                bundle.putInt("id", currentID); //this should put the id number of the clicked item
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
+        registerForContextMenu(listView);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.floating_menu, menu); //provide menu from the method parameters
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int listPosition = info.position;
+        int currentID = idArray.get(listPosition);
+
+        switch(item.getItemId()){
+            case R.id.editName:
+                //show alert, populate textView with name, edit name, update name in FlashcardSet and add to database, update listview
+                AlertDialog.Builder alert =  new AlertDialog.Builder(SelectActivity.this);
+                EditText editSetName = new EditText(SelectActivity.this);
+                FlashcardSet currentFlashcardSet = decodedFlashcardSets.get(listPosition);
+                editSetName.setText(currentFlashcardSet.getName());
+                alert.setView(editSetName);
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //do nothing
+                    }
+                });
+                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        currentFlashcardSet.setName(editSetName.getText().toString());
+                        String currentEncodedFlashcardSet = null;
+                        try {
+                            currentEncodedFlashcardSet = FlashcardSetEncoder.toString(currentFlashcardSet);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        databaseHelper.update(currentID, currentEncodedFlashcardSet);
+                        updateListView();
+                    }
+                });
+                alert.show();
+                return true;
+
+            case R.id.deleteSet:
+                System.out.println(decodedFlashcardSets.get(listPosition).getName() + " " + currentID);
+                String currentEncodedSet = encodedFlashcardSets.get(listPosition);
+                databaseHelper.delete(currentID);
+                updateListView();
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -93,29 +157,12 @@ public class SelectActivity extends AppCompatActivity {
         //INSTANTIATION
 
         FloatingActionButton btn_add = findViewById(R.id.addSet); //name this variable better...
-        FloatingActionButton btn_deleteSet = findViewById(R.id.btn_deleteSet);
-        //FloatingActionButton tempNav = findViewById(R.id.tempNav);
-
-
         //POPULATE THE LISTVIEW
-
         updateListView();
-
-
         //ON CLICK LISTENERS
 
-        btn_deleteSet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
-                databaseHelper.delete(3);
-                //TODO create long press listener on listItem for delete function
-                //                //TODO for this you need to find a way to get the Database ID of the flashcardSet....
-                //TODO Same for when you pass bundle to MainActivity for updating function
-            }
-        });
-
-
+        //TODO for this you need to find a way to get the Database ID of the flashcardSet....
+        //TODO Same for when you pass bundle to MainActivity for updating function
         
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,10 +174,7 @@ public class SelectActivity extends AppCompatActivity {
                 alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //TODO add the serialized flashcardSet to the database and have it display in listview
-                        //TODO when it is clicked start MainActivity and display that FlashcardSet
-
-                        //NEEDS TO CHECK IF NAME ALREADY EXISTS OR IS EMPTY OR CONTAINS INVALID CHARACTERS
+                        //same name is probably fine because ID is unique identifier
                         FlashcardSet flashcardSet = new FlashcardSet(nameText.getText().toString());
                         String encodedFlashcardSet = new String("Untitled");
                         try {
@@ -156,13 +200,5 @@ public class SelectActivity extends AppCompatActivity {
                 FlashcardSet flashcardSet = new FlashcardSet(name);
             }
         });
-
-//        tempNav.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(new Intent(SelectActivity.this, MainActivity.class));
-//            }
-//        });
-
         }
     }

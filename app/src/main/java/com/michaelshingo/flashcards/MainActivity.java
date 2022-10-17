@@ -40,17 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private FlashcardSet flashcardSet = new FlashcardSet("");
     private int i;
 
-//    public static void hideKeyboard(Activity activity) {
-//        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-//        //Find the currently focused view, so we can grab the correct window token from it.
-//        View view = activity.getCurrentFocus();
-//        //If no view currently has focus, create a new one, just so we can grab a window token from it
-//        if (view == null) {
-//            view = new View(activity);
-//        }
-//        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,8 +120,6 @@ public class MainActivity extends AppCompatActivity {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO update database, bundle current set and pass to SelectActivity
-                //TODO error here due to  datbase update
                 String updatedEncodedSet = null;
                 try {
                     updatedEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
@@ -140,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
-                databaseHelper.update(listID, updatedEncodedSet); //fix this!!!!!!!!!!!!!
+                System.out.println("updating id in database" + listID);
+                databaseHelper.update(listID, updatedEncodedSet); //fix this!!!!!!!!!!!!! //TODO
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
             }
         });
@@ -153,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else{
                     flashcardSet.remove(i);
+
                     if (flashcardSet.length() == 0){
                         i = 0;
                         flashcardText.setText("Click the + icon to add a flashcard.");
@@ -162,7 +151,9 @@ public class MainActivity extends AppCompatActivity {
                         i--;
                         flashcardText.setText(flashcardSet.get(i).getTerm());
                     }
-
+                    else {
+                        flashcardText.setText(flashcardSet.get(i).getTerm());
+                    }
                 }
             }
         });
@@ -218,7 +209,6 @@ public class MainActivity extends AppCompatActivity {
 
         flashcard.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeTop(){
-                Toast.makeText(MainActivity.this, "Swipe Top i = " + i, Toast.LENGTH_SHORT).show();
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
@@ -231,44 +221,21 @@ public class MainActivity extends AppCompatActivity {
                     i = flashcardSet.length() - 1;
                 }
                 flashcardText.setText(flashcardSet.get(i).getTerm());
-                //Toast.makeText(MainActivity.this, "Swipe Right", Toast.LENGTH_SHORT).show();
             }
-
             public void onSwipeLeft() {
                 i++;
                 if (i > flashcardSet.length() - 1){
                     i = 0;
                 }
                 flashcardText.setText(flashcardSet.get(i).getTerm());
-                //Toast.makeText(MainActivity.this, "Swipe Left", Toast.LENGTH_SHORT).show();
-
             }
-
             public void onSwipeBottom() {
                 flashcardText.setText(flashcardSet.get(i).getTerm());
-                //Toast.makeText(MainActivity.this, "Swipe Bottom", Toast.LENGTH_SHORT).show();
-
             }
-
             public boolean performClick() {
                 Toast.makeText(MainActivity.this, "Swipe on the flashcard.", Toast.LENGTH_SHORT).show();
                 return true;
             }
-
-
         });
-
-
-//        flashcardText.setShowSoftInputOnFocus((false));
-//        outerLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (flashcardText.getShowSoftInputOnFocus()){
-//                    flashcardText.setShowSoftInputOnFocus(false);
-//                    hideKeyboard(MainActivity.this);
-//                }
-//            }
-//        });
-
     }
 }

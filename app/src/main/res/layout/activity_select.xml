@@ -24,26 +24,15 @@
         />
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_deleteSet"
-        android:backgroundTint="@color/red"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/addSet"
-        android:layout_marginStart="10dp"
-        android:src="@drawable/ic_delete"/>
-
-
 <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/tempNav"-->
+<!--        android:id="@+id/btn_deleteSet"-->
 <!--        android:backgroundTint="@color/red"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="20dp"-->
-<!--        android:layout_alignParentTop="true"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_marginBottom="20dp"-->
-<!--        />-->
+<!--        android:layout_toStartOf="@+id/addSet"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:src="@drawable/ic_delete"/>-->
+
 
 
 </RelativeLayout>

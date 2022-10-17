@@ -66,7 +66,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else{
             //do not add anything
-
         }
 
         cursor.close();
@@ -75,8 +74,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<Integer> getIDs(){
+        ArrayList<Integer> returnList = new ArrayList<>();
+        String queryString = "SELECT * FROM " + FLASHCARD_TABLE;
+        SQLiteDatabase db = this.getReadableDatabase(); //this way database is not locked, as opposed to writable
+        Cursor cursor = db.rawQuery(queryString, null); //cursor is the result set
+
+        if (cursor.moveToFirst()) {
+            //loop through cursor result set and put objects into returnList
+            do {
+               // int id = cursor.getInt(0);
+                Integer id = cursor.getInt(0);
+                returnList.add(id);
+
+            } while (cursor.moveToNext());
+        }
+        else{
+            //do not add anything
+        }
+
+        cursor.close();
+        db.close();
+        System.out.println(returnList);
+        return returnList;
+
+    }
+
     public void update(int id, String encodedFlashcardSet){
-        String idStr = Integer.toString(id + 1);
+        String idStr = Integer.toString(id);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_FLASHCARD_SET, encodedFlashcardSet);
@@ -86,7 +111,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void delete(int id){
-        String idStr = Integer.toString(id + 1);
+
+        //this is working correctly...but the listview is not updating afterwards
+        //and the correct number isn't getting passed to the function???
+        System.out.println("Deleting: " + id);
+        String idStr = Integer.toString(id);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         db.delete(FLASHCARD_TABLE, "ID=?", new String[]{idStr});
