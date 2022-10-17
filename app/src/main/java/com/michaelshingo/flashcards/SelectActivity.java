@@ -61,7 +61,6 @@ public class SelectActivity extends AppCompatActivity {
                 allNames.add(flashcardSet.getName());
             }
         }
-        System.out.println(allNames);
         listView = findViewById(R.id.flashcardSetList);
         ArrayAdapter arrayAdapter = new ArrayAdapter(getApplication(), android.
                 R.layout.simple_list_item_1, allNames);
@@ -70,11 +69,6 @@ public class SelectActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //if you know the item position in the list (i), you can find get correspoding FlashcardSet in array
-                //then you can encode this and find it in the database and delete row....yes???
-                //TODO bundle the DATABASE ID NOT LIST ID
-                System.out.println(idArray + "i = " + i);
-
                 int currentID = idArray.get(i);
                 Intent intent = new Intent(SelectActivity.this, MainActivity.class);
                 Bundle bundle = new Bundle();
@@ -118,7 +112,6 @@ public class SelectActivity extends AppCompatActivity {
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //do nothing
                     }
                 });
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -139,7 +132,6 @@ public class SelectActivity extends AppCompatActivity {
                 return true;
 
             case R.id.deleteSet:
-                System.out.println(decodedFlashcardSets.get(listPosition).getName() + " " + currentID);
                 String currentEncodedSet = encodedFlashcardSets.get(listPosition);
                 databaseHelper.delete(currentID);
                 updateListView();
@@ -157,13 +149,7 @@ public class SelectActivity extends AppCompatActivity {
         //INSTANTIATION
 
         FloatingActionButton btn_add = findViewById(R.id.addSet); //name this variable better...
-        //POPULATE THE LISTVIEW
         updateListView();
-        //ON CLICK LISTENERS
-
-        //TODO for this you need to find a way to get the Database ID of the flashcardSet....
-        //TODO Same for when you pass bundle to MainActivity for updating function
-        
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,7 +168,6 @@ public class SelectActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
                         DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
                         boolean success = databaseHelper.addOne(encodedFlashcardSet);
                         updateListView();
@@ -192,7 +177,6 @@ public class SelectActivity extends AppCompatActivity {
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //Do nothing
                             }
                         });
                 alert.show();

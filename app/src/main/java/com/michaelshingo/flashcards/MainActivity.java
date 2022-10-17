@@ -73,15 +73,11 @@ public class MainActivity extends AppCompatActivity {
             flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
         }
 
-
         //ON CLICK LISTENERS
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO when adding flashcard, add it to the database
-                //EDIT BUTTON POP UP
                 AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-
                 alert.setTitle("New Flashcard");
                 LinearLayout addLayout = new LinearLayout(MainActivity.this);
                 addLayout.setOrientation(LinearLayout.VERTICAL);
@@ -100,20 +96,16 @@ public class MainActivity extends AppCompatActivity {
                         Flashcard flashcard = new Flashcard(term.getText().toString(), definition.getText().toString(), -1);
                         flashcardSet.add(flashcard);
                         i = flashcardSet.length() - 1;
-                        System.out.println("new flashcard, i is now: " + i);
                         flashcardText.setText(flashcardSet.get(i).getTerm()); //shows last added term
                         Toast.makeText(MainActivity.this, "new flashhcard i = " + i, Toast.LENGTH_SHORT).show();
                     }
                 });
-
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int j) {
-
                     }
                 });
                 alert.show();
-
             }
         });
 
@@ -127,8 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
-                System.out.println("updating id in database" + listID);
-                databaseHelper.update(listID, updatedEncodedSet); //fix this!!!!!!!!!!!!! //TODO
+                databaseHelper.update(listID, updatedEncodedSet);
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
             }
         });
@@ -161,18 +152,12 @@ public class MainActivity extends AppCompatActivity {
         btn_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //TODO what to do when there are no flashcards yet
-
                 if (flashcardSet.length() == 0){
                     Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
-
                 }
                 else{
                     Flashcard currentFlashcard = flashcardSet.get(i);
-
                     AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-
                     alert.setTitle("Edit Flashcard");
                     LinearLayout editLayout = new LinearLayout(MainActivity.this);
                     editLayout.setOrientation(LinearLayout.VERTICAL);
@@ -183,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
                     editLayout.addView(term);
                     editLayout.addView(definition);
                     alert.setView(editLayout);
-
                     alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int j) {
@@ -193,11 +177,9 @@ public class MainActivity extends AppCompatActivity {
                             flashcardText.setText(currentFlashcard.getTerm().toString());
                         }
                     });
-
                     alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int j) {
-
                         }
                     });
                     alert.show();
@@ -212,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
-                System.out.println("%%%%%%%%%%%% i = %%%%%%%%% " + i);
                 flashcardText.setText(flashcardSet.get(i).getDefinition());
             }
             public void onSwipeRight(){
