@@ -1,5 +1,7 @@
 package com.michaelshingo.flashcards;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +31,14 @@ import java.util.List;
 
 //Features to add: sorting, recycle bin for deleted flashcards
 public class SelectActivity extends AppCompatActivity {
+    //TODO flashcards must have a name
+    //TODO center the listview and pick a font
+    //TODO limit length of set names
+    //TODO reordering and sorting the list??
+    //TODO searching the lisT?
+    //TODO different color themes in settings
+    //TODO create character counter in alert dialogue
+
 
     private FloatingActionButton btn_add;
     private ListView listView;
@@ -36,6 +46,7 @@ public class SelectActivity extends AppCompatActivity {
     private FloatingActionButton btn_deleteSet;
     private ArrayList<String> encodedFlashcardSets;
     private ArrayList<FlashcardSet> decodedFlashcardSets;
+    private int MAX_CHAR_COUNT = 40;
     ArrayList<Integer> idArray;
 
     private void updateListView(){
@@ -153,6 +164,11 @@ public class SelectActivity extends AppCompatActivity {
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(SelectActivity.this, R.animator.property_animator1);
+                set.setTarget(btn_add);
+                set.start();
+                btn_add.animate().scaleX(0).scaleY(0);
+                btn_add.hide();
                 AlertDialog.Builder alert = new AlertDialog.Builder(SelectActivity.this);
                 final EditText nameText = new EditText(SelectActivity.this);
                 nameText.setHint("Name your flashcard set");
@@ -160,17 +176,30 @@ public class SelectActivity extends AppCompatActivity {
                 alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //same name is probably fine because ID is unique identifier
-                        FlashcardSet flashcardSet = new FlashcardSet(nameText.getText().toString());
-                        String encodedFlashcardSet = new String("Untitled");
-                        try {
-                            encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        FlashcardSet flashcardSet = new FlashcardSet("");
+                        String userInput = nameText.getText().toString();
+                        if (userInput.length() > MAX_CHAR_COUNT){
+                            Toast.makeText(SelectActivity.this,
+                                    "Name must be less than " + Integer.toString(MAX_CHAR_COUNT) + " characters.",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
-                        boolean success = databaseHelper.addOne(encodedFlashcardSet);
-                        updateListView();
+                        else {
+                            if (userInput.length() == 0) {
+                                flashcardSet.setName("Untitled");
+                            }
+                            else{
+                                flashcardSet.setName(nameText.getText().toString());
+                            }
+                            String encodedFlashcardSet = new String("Untitled");
+                            try {
+                                encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
+                            boolean success = databaseHelper.addOne(encodedFlashcardSet);
+                            updateListView();
+                        }
                     }
                 });
 
@@ -179,6 +208,13 @@ public class SelectActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
                         });
+                alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        btn_add.animate().scaleX(1f).scaleY(1f);
+                        btn_add.show();
+                    }
+                });
                 alert.show();
                 String name = "";
                 FlashcardSet flashcardSet = new FlashcardSet(name);
@@ -186,3 +222,4 @@ public class SelectActivity extends AppCompatActivity {
         });
         }
     }
+
