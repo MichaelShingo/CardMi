@@ -7,6 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.Layout;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,7 +18,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,14 +37,10 @@ import java.util.List;
 
 //Features to add: sorting, recycle bin for deleted flashcards
 public class SelectActivity extends AppCompatActivity {
-    //TODO flashcards must have a name
     //TODO center the listview and pick a font
-    //TODO limit length of set names
     //TODO reordering and sorting the list??
     //TODO searching the lisT?
     //TODO different color themes in settings
-    //TODO create character counter in alert dialogue
-
 
     private FloatingActionButton btn_add;
     private ListView listView;
@@ -73,8 +75,7 @@ public class SelectActivity extends AppCompatActivity {
             }
         }
         listView = findViewById(R.id.flashcardSetList);
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getApplication(), android.
-                R.layout.simple_list_item_1, allNames);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(getApplication(), R.layout.centered_list, allNames);
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -117,18 +118,58 @@ public class SelectActivity extends AppCompatActivity {
                 //show alert, populate textView with name, edit name, update name in FlashcardSet and add to database, update listview
                 AlertDialog.Builder alert =  new AlertDialog.Builder(SelectActivity.this);
                 EditText editSetName = new EditText(SelectActivity.this);
+                editSetName.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                TextView charCount = new TextView(SelectActivity.this);
+                LinearLayout editNameLayout = new LinearLayout(SelectActivity.this);
+                editNameLayout.setOrientation(LinearLayout.VERTICAL);
+                editNameLayout.addView(editSetName);
+                editNameLayout.addView(charCount);
                 FlashcardSet currentFlashcardSet = decodedFlashcardSets.get(listPosition);
                 editSetName.setText(currentFlashcardSet.getName());
-                alert.setView(editSetName);
+                charCount.setText(editSetName.getText().toString().length() + "/" + MAX_CHAR_COUNT);
+
+                TextWatcher editNameCounter = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        int currentLength = editSetName.length(); //charSequence.length();
+                        charCount.setText(currentLength + "/" + MAX_CHAR_COUNT);
+                        if (currentLength > MAX_CHAR_COUNT){
+                            charCount.setTextColor(getResources().getColor(R.color.red));
+                        }
+                        else{
+                            charCount.setTextColor(getResources().getColor(R.color.black));
+                        }
+                    }
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                    }
+                };
+
+                editSetName.addTextChangedListener(editNameCounter);
+
+                alert.setView(editNameLayout);
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
                 });
+
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        currentFlashcardSet.setName(editSetName.getText().toString());
+                        if (editSetName.length() == 0){
+                            currentFlashcardSet.setName(getResources().getString(R.string.untitled));
+                        }
+                        else if (editSetName.length() > 40){
+                            currentFlashcardSet.setName(editSetName.getText().toString().substring(0,MAX_CHAR_COUNT));
+                        }
+                        else {
+                            currentFlashcardSet.setName(editSetName.getText().toString());
+                        }
+
                         String currentEncodedFlashcardSet = null;
                         try {
                             currentEncodedFlashcardSet = FlashcardSetEncoder.toString(currentFlashcardSet);
@@ -172,34 +213,64 @@ public class SelectActivity extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(SelectActivity.this);
                 final EditText nameText = new EditText(SelectActivity.this);
                 nameText.setHint("Name your flashcard set");
-                alert.setView(nameText);
+                TextView charCount = new TextView(SelectActivity.this);
+                LinearLayout addFlashcardLayout = new LinearLayout(SelectActivity.this);
+                addFlashcardLayout.setOrientation(LinearLayout.VERTICAL);
+                addFlashcardLayout.addView(nameText);
+                addFlashcardLayout.addView(charCount);
+                charCount.setText(nameText.length() + "/" + MAX_CHAR_COUNT);
+
+                TextWatcher addNameCounter = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        int currentLength = nameText.length();
+                        charCount.setText(currentLength + "/" + MAX_CHAR_COUNT);
+                        if (currentLength > MAX_CHAR_COUNT){
+                            charCount.setTextColor(getResources().getColor(R.color.red));
+                        }
+                        else {
+                            charCount.setTextColor(getResources().getColor(R.color.black));
+                        }
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                    }
+                };
+
+                nameText.addTextChangedListener(addNameCounter);
+
+
+                alert.setView(addFlashcardLayout);
                 alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         FlashcardSet flashcardSet = new FlashcardSet("");
                         String userInput = nameText.getText().toString();
-                        if (userInput.length() > MAX_CHAR_COUNT){
-                            Toast.makeText(SelectActivity.this,
-                                    "Name must be less than " + Integer.toString(MAX_CHAR_COUNT) + " characters.",
-                                    Toast.LENGTH_SHORT).show();
+
+                        if (userInput.length() == 0) {
+                            flashcardSet.setName(getResources().getString(R.string.untitled));
+                        }
+                        else if (userInput.length() > 40) {
+                            flashcardSet.setName(nameText.getText().toString().substring(0, MAX_CHAR_COUNT));
                         }
                         else {
-                            if (userInput.length() == 0) {
-                                flashcardSet.setName("Untitled");
-                            }
-                            else{
-                                flashcardSet.setName(nameText.getText().toString());
-                            }
-                            String encodedFlashcardSet = new String("Untitled");
-                            try {
-                                encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
-                            boolean success = databaseHelper.addOne(encodedFlashcardSet);
-                            updateListView();
+                            flashcardSet.setName(nameText.getText().toString());
                         }
+                        String encodedFlashcardSet = "Untitled";
+                        try {
+                            encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
+                        boolean success = databaseHelper.addOne(encodedFlashcardSet);
+                        updateListView();
+
                     }
                 });
 
