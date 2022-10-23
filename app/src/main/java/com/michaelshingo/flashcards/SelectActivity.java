@@ -26,6 +26,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -49,6 +50,8 @@ public class SelectActivity extends AppCompatActivity {
     private ArrayList<String> encodedFlashcardSets;
     private ArrayList<FlashcardSet> decodedFlashcardSets;
     private int MAX_CHAR_COUNT = 40;
+    Toolbar toolbar;
+
     ArrayList<Integer> idArray;
 
     private void updateListView(){
@@ -69,6 +72,7 @@ public class SelectActivity extends AppCompatActivity {
             decodedFlashcardSets.add(decodedFlashcardSet);
         }
         ArrayList<String> allNames = new ArrayList<>();
+        System.out.println(allNames);
         for (FlashcardSet flashcardSet: decodedFlashcardSets){
             if (flashcardSet != null) {
                 allNames.add(flashcardSet.getName());
@@ -196,6 +200,14 @@ public class SelectActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+
+
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
         setContentView(R.layout.activity_select);
 
         //INSTANTIATION

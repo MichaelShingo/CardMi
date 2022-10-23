@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Flashcards</string>
+    <string name="app_name">CardMi</string>
     <string name="select_label">Flashcard Sets</string>
     <string name="flashcard_label">Current Flashcard</string>
     <string name="untitled">Untitled</string>

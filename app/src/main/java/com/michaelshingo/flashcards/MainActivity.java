@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
@@ -39,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton btn_add, btn_edit, btn_delete, btn_back;
     private FlashcardSet flashcardSet = new FlashcardSet("");
     private int i;
+    private int DURATION1000 = 1000;
+    private int DURATIONFLIP = 250;
+    private int DURATION100 = 100;
+    private int DURATION500 = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,20 @@ public class MainActivity extends AppCompatActivity {
         i = 0;
         RelativeLayout outerLayout = findViewById(R.id.outerLayout);
 
+        YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_back);
+
+        YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_add);
+
+        YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_edit);
+
+        YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_delete);
+
+        YoYo.with(Techniques.RotateIn).duration(250).playOn(flashcard);
+        YoYo.with(Techniques.RotateIn).duration(250).playOn(flashcardText);
+
+
+
+
         //RETRIEVES FLASHCARD SET FORM SELECTACIVITY
         Bundle bundle = getIntent().getExtras();
         String encodedFlashcardSet = bundle.getString("set");
@@ -69,8 +89,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //DISPLAY THE FIRST FLASHCARD IF NOT EMPTY
-        if (flashcardSet.length() != 0) {
-            flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
+        try {
+            if (flashcardSet.length() != 0) {
+                flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
 
         //ON CLICK LISTENERS
@@ -194,13 +219,24 @@ public class MainActivity extends AppCompatActivity {
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
+                YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcardText);
+
+                YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).delay(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).delay(DURATIONFLIP).playOn(flashcardText);
                 flashcardText.setText(flashcardSet.get(i).getDefinition());
+
             }
             public void onSwipeRight(){
                 i--;
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
+                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcardText);
+
+                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcardText);
                 flashcardText.setText(flashcardSet.get(i).getTerm());
             }
             public void onSwipeLeft() {
@@ -208,10 +244,21 @@ public class MainActivity extends AppCompatActivity {
                 if (i > flashcardSet.length() - 1){
                     i = 0;
                 }
+                YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcardText);
+
+                YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcardText);
                 flashcardText.setText(flashcardSet.get(i).getTerm());
             }
             public void onSwipeBottom() {
+                YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcardText);
+
+                YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcardText);
                 flashcardText.setText(flashcardSet.get(i).getTerm());
+
             }
             public boolean performClick() {
                 Toast.makeText(MainActivity.this, "Swipe on the flashcard.", Toast.LENGTH_SHORT).show();

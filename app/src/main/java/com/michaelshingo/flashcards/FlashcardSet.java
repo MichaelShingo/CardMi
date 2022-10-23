@@ -6,10 +6,16 @@ import java.util.ArrayList;
 
 public class FlashcardSet implements Serializable {
     private ArrayList<Flashcard> flashcardList = new ArrayList<Flashcard>();
+    private ArrayList<Flashcard> studiedFlashcards = new ArrayList<>();
     private String name;
 
     public void add(Flashcard flashcard){
         flashcardList.add(flashcard);
+    }
+
+    public void markAsStudied(int i){
+        studiedFlashcards.add(flashcardList.get(i));
+        flashcardList.remove(i);
     }
 
     public Flashcard get(int index){

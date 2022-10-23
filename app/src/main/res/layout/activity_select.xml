@@ -3,12 +3,48 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Flashcard Sets"
+                android:textSize="30dp"
+                android:textAlignment="center"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="6dp"
+                />
+
+            <ImageView
+                android:id="@+id/actionLogo"
+                android:layout_height="match_parent"
+                android:layout_width="80dp"
+                android:src="@drawable/cardmi_logo_no_text_small"
+                android:contentDescription="logo"/>
+
+        </RelativeLayout>
+
+
+
+    </androidx.appcompat.widget.Toolbar>
 
     <ListView
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/flashcardSetList"
         android:layout_centerHorizontal="true"/>
+    
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addSet"
@@ -21,4 +57,5 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="20dp"
         />
+
 </RelativeLayout>
