@@ -1,5 +1,6 @@
 package com.michaelshingo.flashcards;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -14,11 +15,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,12 +44,73 @@ public class MainActivity extends AppCompatActivity {
     private TextView flashcardText;
     private RelativeLayout outerLayout;
     private FloatingActionButton btn_add, btn_edit, btn_delete, btn_back;
+    private ImageButton btn_studied;
     private FlashcardSet flashcardSet = new FlashcardSet("");
     private int i;
     private int DURATION1000 = 1000;
     private int DURATIONFLIP = 250;
     private int DURATION100 = 100;
     private int DURATION500 = 500;
+    private ImageButton btn_overflow;
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.overflow_menu_main, menu); //provide menu from the method parameters
+    }
+
+
+    public void setTextAfterDelete(int index) {
+        if (flashcardSet.length() == 0) {
+            Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
+        } else {
+            flashcardSet.remove(i);
+
+            if (flashcardSet.length() == 0) {
+                i = 0;
+                flashcardText.setText("Click the + icon to add a flashcard.");
+            } else if (i > flashcardSet.length() - 1) {
+                i--;
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+            } else {
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item){
+        switch (item.getItemId()){
+            case R.id.btn_list:
+                Toast.makeText(MainActivity.this, "Show as list", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.btn_studied:
+                Toast.makeText(MainActivity.this, "studied", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.btn_recycle_bin:
+                Toast.makeText(MainActivity.this, "recycle", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.btn_sort_asc:
+                flashcardSet.sortAsc();
+                i = 0;
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+                //sort the list according to term
+                //reset i to 0
+                //set flashcardText
+                return true;
+            case R.id.btn_sort_desc:
+                flashcardSet.sortAsc();
+                i = 0;
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+                return true;
+            case R.id.btn_shuffle:
+                Toast.makeText(MainActivity.this, "shuffle", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return true;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,22 +124,19 @@ public class MainActivity extends AppCompatActivity {
         btn_delete = findViewById(R.id.btn_delete);
         btn_back = findViewById(R.id.btn_back);
         flashcardText = findViewById(R.id.flashcardText);
+        btn_studied = findViewById(R.id.studied);
         flashcard = findViewById(R.id.flashcard);
+        btn_overflow = findViewById(R.id.btn_overflow);
+
         i = 0;
         RelativeLayout outerLayout = findViewById(R.id.outerLayout);
 
         YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_back);
-
         YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_add);
-
         YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_edit);
-
         YoYo.with(Techniques.FadeInLeft).duration(DURATION1000).playOn(btn_delete);
-
         YoYo.with(Techniques.RotateIn).duration(250).playOn(flashcard);
         YoYo.with(Techniques.RotateIn).duration(250).playOn(flashcardText);
-
-
 
 
         //RETRIEVES FLASHCARD SET FORM SELECTACIVITY
@@ -98,7 +161,33 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+
         //ON CLICK LISTENERS
+
+        registerForContextMenu(btn_overflow);
+        btn_overflow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.this.openContextMenu(btn_overflow);
+
+            }
+        });
+
+        btn_studied.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (flashcardSet.length() == 0){
+                    Toast.makeText(MainActivity.this, R.string.create_first, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(MainActivity.this, flashcardSet.get(i).getTerm() + " marked as studied.", Toast.LENGTH_SHORT).show();
+                    flashcardSet.markAsStudied(i);
+                    setTextAfterDelete(i);
+                }
+
+            }
+        });
+
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                         flashcardSet.add(flashcard);
                         i = flashcardSet.length() - 1;
                         flashcardText.setText(flashcardSet.get(i).getTerm()); //shows last added term
-                        Toast.makeText(MainActivity.this, "new flashhcard i = " + i, Toast.LENGTH_SHORT).show();
+                        System.out.println("%%%%%%%%%% flashcardSet Size = " + flashcardSet.length());
                     }
                 });
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -152,27 +241,9 @@ public class MainActivity extends AppCompatActivity {
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (flashcardSet.length() == 0){
-                    Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
+                setTextAfterDelete(i);
                 }
-                else{
-                    flashcardSet.remove(i);
-
-                    if (flashcardSet.length() == 0){
-                        i = 0;
-                        flashcardText.setText("Click the + icon to add a flashcard.");
-                        //TODO try not to hardcode this string....
-                    }
-                    else if (i > flashcardSet.length() - 1){
-                        i--;
-                        flashcardText.setText(flashcardSet.get(i).getTerm());
-                    }
-                    else {
-                        flashcardText.setText(flashcardSet.get(i).getTerm());
-                    }
-                }
-            }
-        });
+            });
 
         btn_edit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,9 +299,9 @@ public class MainActivity extends AppCompatActivity {
 
             }
             public void onSwipeRight(){
-                i--;
-                if (i < 0){
-                    i = flashcardSet.length() - 1;
+                i++;
+                if (i > flashcardSet.length() - 1){
+                    i = 0;
                 }
                 YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcardText);
@@ -240,10 +311,11 @@ public class MainActivity extends AppCompatActivity {
                 flashcardText.setText(flashcardSet.get(i).getTerm());
             }
             public void onSwipeLeft() {
-                i++;
-                if (i > flashcardSet.length() - 1){
-                    i = 0;
+                i--;
+                if (i < 0){
+                    i = flashcardSet.length() - 1;
                 }
+
                 YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcardText);
 

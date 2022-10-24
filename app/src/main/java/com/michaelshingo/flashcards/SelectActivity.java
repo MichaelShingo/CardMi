@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -116,6 +117,7 @@ public class SelectActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int listPosition = info.position;
         int currentID = idArray.get(listPosition);
+        System.out.println("list position = " + listPosition + " currentID = " + currentID);
 
         switch(item.getItemId()){
             case R.id.editName:
@@ -201,16 +203,12 @@ public class SelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-
-
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
         setContentView(R.layout.activity_select);
 
         //INSTANTIATION
+
 
         FloatingActionButton btn_add = findViewById(R.id.addSet); //name this variable better...
         updateListView();
@@ -282,7 +280,6 @@ public class SelectActivity extends AppCompatActivity {
                         DatabaseHelper databaseHelper = new DatabaseHelper(SelectActivity.this);
                         boolean success = databaseHelper.addOne(encodedFlashcardSet);
                         updateListView();
-
                     }
                 });
 

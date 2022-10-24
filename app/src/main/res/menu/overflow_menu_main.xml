@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/btn_list"
+        android:title="View as List"/>
+    <item
+        android:id="@+id/btn_studied"
+        android:title="View Studied"/>
+    <item
+        android:id="@+id/btn_recycle_bin"
+        android:title="Recycle Bin"/>
+    <item
+        android:id="@+id/btn_sort_asc"
+        android:title="Sort Ascending"/>
+    <item
+        android:id="@+id/btn_sort_desc"
+        android:title="Sort Descending"/>
+    <item
+        android:id="@+id/btn_shuffle"
+        android:title="Shuffle"/>
+
+</menu>

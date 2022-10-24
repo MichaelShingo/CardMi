@@ -6,6 +6,12 @@
     android:id="@+id/outerLayout"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
+
+    <include
+        layout="@layout/custom_action_bar"/>
+
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,25 +34,23 @@
             android:layout_marginBottom="25dp"
             android:text="Click the + icon to add a flashcard."
             android:textStyle="bold" />
-<!--        <RelativeLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+            <ImageButton
+                android:id="@+id/studied"
+                android:src="@drawable/ic_check"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/roundedbutton"
+                android:layout_marginEnd="10dp"
+                android:layout_margin="10dp"
+                />
 
-
-<!--            <ImageButton-->
-<!--                android:id="@+id/studied"-->
-<!--                android:src="@drawable/ic_check"-->
-<!--                android:layout_width="50dp"-->
-<!--                android:layout_height="50dp"-->
-<!--                android:layout_alignParentBottom="true"-->
-<!--                android:layout_alignParentEnd="true"-->
-<!--                android:background="@drawable/roundedbutton"-->
-<!--                android:layout_marginEnd="10dp"-->
-<!--                android:layout_margin="10dp"-->
-<!--                />-->
-
-<!--        </RelativeLayout>-->
+        </RelativeLayout>
 
 
     </androidx.cardview.widget.CardView>
