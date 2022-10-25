@@ -95,6 +95,28 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.btn_studied:
                 //TODO working on pop up window for listview
+                //TODO within the listview, options to delete or restore
+                //adjust formatting of popupwindow
+                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                View popupView = inflater.inflate(R.layout.popup_window_main, null);
+                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                boolean focusable = true; //allows taps outside the window to dismiss it
+                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+                studiedListView = popupView.findViewById(R.id.popup_listview);
+                System.out.println(studiedListView.toString());
+                ArrayList<Flashcard> studiedFlashcardList = flashcardSet.getStudiedFlashcardList();
+                ArrayList<String> studiedTermList = new ArrayList<>();
+                for (Flashcard card:studiedFlashcardList){
+                    studiedTermList.add(card.getTerm());
+                }
+                System.out.println(studiedTermList.toString());
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, studiedTermList);
+                studiedListView.setAdapter(arrayAdapter);
+
+
+                popupWindow.showAtLocation(flashcard, Gravity.CENTER, 0, 0);
 
 
 

@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="80dp"
-    android:layout_height="80dp"
-    android:background="@color/yellowDesat">
-
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:outlineAmbientShadowColor="@color/black"
+    android:elevation="10dp"
+    android:background="@color/white">
+    
     <TextView
-        android:id="@+id/popup_textview"
+        android:id="@+id/studiedTitle"
         android:layout_width="match_parent"
         android:layout_height="20dp"
-        android:text="Filler text"/>
-
+        android:text="Studied Flashcards"
+        android:layout_alignParentTop="true"/>
     <ListView
         android:id="@+id/popup_listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_centerInParent="true"
+        android:outlineAmbientShadowColor="@color/black"
+        android:layout_width="300dp"
+        android:layout_height="550dp"
+        android:layout_below="@+id/studiedTitle"
+        android:layout_alignParentBottom="true"/>
 
 
 
