@@ -11,13 +11,41 @@ public class FlashcardSet implements Serializable {
     private ArrayList<Flashcard> studiedFlashcards = new ArrayList<>();
     private String name;
 
+    public void sortDesc(){
+        if (!flashcardList.isEmpty()) {
+            Collections.sort(flashcardList, new Comparator<Flashcard>() {
+                @Override
+                public int compare(final Flashcard f1, final Flashcard f2) {
+                    return f2.getTerm().compareToIgnoreCase(f1.getTerm());
+                }
+            });
+        }
+    }
+
+    public ArrayList<Flashcard> getStudiedFlashcardList(){
+        return studiedFlashcards;
+    }
+
+
+    public int getStudiedLength(){
+        return studiedFlashcards.size();
+    }
+
     public void sortAsc(){
-        Collections.sort(flashcardList, new Comparator<Flashcard>(){
-            @Override
-            public int compare(Flashcard f1, Flashcard f2) {
-                return f2.getTerm().compareTo(f1.getTerm());
-            }
-        });
+        if (!flashcardList.isEmpty()) {
+            Collections.sort(flashcardList, new Comparator<Flashcard>() {
+                @Override
+                public int compare(final Flashcard f1, final Flashcard f2) {
+                    return f1.getTerm().compareToIgnoreCase(f2.getTerm());
+                }
+            });
+        }
+        else{
+        }
+    }
+
+    public void shuffle(){
+        Collections.shuffle(flashcardList);
     }
     public void add(Flashcard flashcard){
         flashcardList.add(flashcard);

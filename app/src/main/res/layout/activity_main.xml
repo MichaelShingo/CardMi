@@ -23,6 +23,7 @@
         android:outlineAmbientShadowColor="@color/yellowSat"
         android:outlineSpotShadowColor="@color/yellowSat">
 
+
         <TextView
             android:id="@+id/flashcardText"
             android:layout_width="match_parent"

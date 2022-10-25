@@ -16,15 +16,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private int DURATION100 = 100;
     private int DURATION500 = 500;
     private ImageButton btn_overflow;
+    private PopupWindow studiedPopupWindow;
+    private ListView studiedListView;
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -81,17 +88,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item){
+        //TODO make sure this protects against null values and empty lists
         switch (item.getItemId()){
             case R.id.btn_list:
                 Toast.makeText(MainActivity.this, "Show as list", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.btn_studied:
-                Toast.makeText(MainActivity.this, "studied", Toast.LENGTH_SHORT).show();
+                //TODO working on pop up window for listview
+
+
+
+
                 return true;
             case R.id.btn_recycle_bin:
                 Toast.makeText(MainActivity.this, "recycle", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.btn_sort_asc:
+                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
+                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
                 flashcardSet.sortAsc();
                 i = 0;
                 flashcardText.setText(flashcardSet.get(i).getTerm());
@@ -100,11 +114,18 @@ public class MainActivity extends AppCompatActivity {
                 //set flashcardText
                 return true;
             case R.id.btn_sort_desc:
-                flashcardSet.sortAsc();
+                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
+                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
+                flashcardSet.sortDesc();
                 i = 0;
                 flashcardText.setText(flashcardSet.get(i).getTerm());
                 return true;
             case R.id.btn_shuffle:
+                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
+                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
+                flashcardSet.shuffle();
+                i = 0;
+                flashcardText.setText(flashcardSet.get(i).getTerm());
                 Toast.makeText(MainActivity.this, "shuffle", Toast.LENGTH_SHORT).show();
                 return true;
             default:
@@ -160,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e){
             e.printStackTrace();
         }
+
 
 
         //ON CLICK LISTENERS
@@ -292,33 +314,32 @@ public class MainActivity extends AppCompatActivity {
                 }
                 YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcardText);
-
                 YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).delay(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).delay(DURATIONFLIP).playOn(flashcardText);
                 flashcardText.setText(flashcardSet.get(i).getDefinition());
 
             }
             public void onSwipeRight(){
-                i++;
-                if (i > flashcardSet.length() - 1){
-                    i = 0;
-                }
-                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcardText);
 
-                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcardText);
-                flashcardText.setText(flashcardSet.get(i).getTerm());
-            }
-            public void onSwipeLeft() {
                 i--;
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
 
+                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcardText);
+                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcard);
+                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcardText);
+                flashcardText.setText(flashcardSet.get(i).getTerm());
+            }
+            public void onSwipeLeft() {
+                i++;
+                if (i > flashcardSet.length() - 1){
+                    i = 0;
+                }
+
                 YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcardText);
-
                 YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcardText);
                 flashcardText.setText(flashcardSet.get(i).getTerm());
@@ -326,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeBottom() {
                 YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcardText);
-
                 YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcardText);
                 flashcardText.setText(flashcardSet.get(i).getTerm());
