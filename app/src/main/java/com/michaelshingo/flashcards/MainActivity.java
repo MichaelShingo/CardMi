@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_studied:
                 //bundle the flashcardset item
                 Bundle bundle = new Bundle();
+                Intent intent = new Intent(MainActivity.this, StudiedActivity.class);
                 String currentEncodedSet = null;
                 try {
                     currentEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
@@ -121,36 +122,9 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-
-
-//                //WHY DON'T YOU JUST PUT THIS IN A DIFFERENT ACTIVITY....
-//                //TODO working on pop up window for listview
-//                //adjust formatting of popupwindow
-//                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View popupView = inflater.inflate(R.layout.popup_window_main, null);
-//                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-//                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-//                boolean focusable = true; //allows taps outside the window to dismiss it
-//                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-//                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-//                popupWindow.setElevation(35);
-//
-//                studiedListView = popupView.findViewById(R.id.popup_listview);
-//                ArrayList<Flashcard> studiedFlashcardList = flashcardSet.getStudiedFlashcardList();
-//                ArrayList<String> studiedTermList = new ArrayList<>();
-//                ArrayList<String> studiedDefList = new ArrayList<>();
-//                for (Flashcard card:studiedFlashcardList){
-//                    studiedTermList.add(card.getTerm());
-//                }
-//                for (Flashcard card:studiedFlashcardList){
-//                    studiedDefList.add(card.getDefinition());
-//                }
-//
-//                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, studiedTermList);
-//                studiedListView.setAdapter(arrayAdapter);
-//
-//                popupWindow.showAtLocation(flashcard, Gravity.CENTER, 0, 0);
-//                registerForContextMenu(studiedListView);
+                bundle.putString("set", currentEncodedSet);
+                intent.putExtras(bundle);
+                startActivity(intent);
 
                 //TODO remember you DON"T use onClick listeners for context menu items
                 return true;
