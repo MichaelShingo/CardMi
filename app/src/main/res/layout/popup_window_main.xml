@@ -9,17 +9,35 @@
     <TextView
         android:id="@+id/studiedTitle"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:text="Studied Flashcards"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textSize="25sp"
         android:layout_alignParentTop="true"/>
     <ListView
         android:id="@+id/popup_listview"
         android:layout_centerInParent="true"
         android:outlineAmbientShadowColor="@color/black"
         android:layout_width="300dp"
-        android:layout_height="550dp"
-        android:layout_below="@+id/studiedTitle"
-        android:layout_alignParentBottom="true"/>
+        android:layout_height="500dp"
+        android:layout_below="@+id/studiedTitle"/>
+
+    <Button
+        android:id="@+id/btn_closepopup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/popup_listview"
+        android:textColor="@color/brownSat"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:padding="5dp"
+        android:text="Close" />
 
 
 

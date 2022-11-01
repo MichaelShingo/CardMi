@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/btn_mark_for_study"
+        android:title="@string/mark_for_study"/>
+    <item
+        android:id="@+id/btn_delete_studied"
+        android:title="@string/delete"/>
+</menu>

@@ -13,6 +13,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.ContextMenu;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,9 +65,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        //is this even being triggered when you click the listeview item???
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.overflow_menu_main, menu); //provide menu from the method parameters
+        System.out.println(v.getId());
+        System.out.println("Some kind of contextmenuregistered item was selected..................");
+
+
+        if (v.getId() == R.id.btn_overflow) {
+            menuInflater.inflate(R.menu.overflow_menu_main, menu); //provide menu from the method parameters
+        }
+        else if (v.getId() == studiedListView.getItemIdAtPosition(0)) { //it's just a matter of finding the ID of the listview item.....
+            System.out.println("triggered studiedListView contextMenu if statement");
+            System.out.println(studiedListView.getItemIdAtPosition(0));
+            menuInflater.inflate(R.menu.studied_menu, menu);
+        }
     }
 
 
@@ -86,42 +101,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item){
         //TODO make sure this protects against null values and empty lists
+        //TODO is the database updating when you add things to studied?
         switch (item.getItemId()){
             case R.id.btn_list:
                 Toast.makeText(MainActivity.this, "Show as list", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.btn_studied:
-                //TODO working on pop up window for listview
-                //TODO within the listview, options to delete or restore
-                //adjust formatting of popupwindow
-                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                View popupView = inflater.inflate(R.layout.popup_window_main, null);
-                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                boolean focusable = true; //allows taps outside the window to dismiss it
-                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-                studiedListView = popupView.findViewById(R.id.popup_listview);
-                System.out.println(studiedListView.toString());
-                ArrayList<Flashcard> studiedFlashcardList = flashcardSet.getStudiedFlashcardList();
-                ArrayList<String> studiedTermList = new ArrayList<>();
-                for (Flashcard card:studiedFlashcardList){
-                    studiedTermList.add(card.getTerm());
+                //bundle the flashcardset item
+                Bundle bundle = new Bundle();
+                String currentEncodedSet = null;
+                try {
+                    currentEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                System.out.println(studiedTermList.toString());
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, studiedTermList);
-                studiedListView.setAdapter(arrayAdapter);
-
-
-                popupWindow.showAtLocation(flashcard, Gravity.CENTER, 0, 0);
 
 
 
+//                //WHY DON'T YOU JUST PUT THIS IN A DIFFERENT ACTIVITY....
+//                //TODO working on pop up window for listview
+//                //adjust formatting of popupwindow
+//                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+//                View popupView = inflater.inflate(R.layout.popup_window_main, null);
+//                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+//                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//                boolean focusable = true; //allows taps outside the window to dismiss it
+//                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+//                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+//                popupWindow.setElevation(35);
+//
+//                studiedListView = popupView.findViewById(R.id.popup_listview);
+//                ArrayList<Flashcard> studiedFlashcardList = flashcardSet.getStudiedFlashcardList();
+//                ArrayList<String> studiedTermList = new ArrayList<>();
+//                ArrayList<String> studiedDefList = new ArrayList<>();
+//                for (Flashcard card:studiedFlashcardList){
+//                    studiedTermList.add(card.getTerm());
+//                }
+//                for (Flashcard card:studiedFlashcardList){
+//                    studiedDefList.add(card.getDefinition());
+//                }
+//
+//                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, studiedTermList);
+//                studiedListView.setAdapter(arrayAdapter);
+//
+//                popupWindow.showAtLocation(flashcard, Gravity.CENTER, 0, 0);
+//                registerForContextMenu(studiedListView);
 
+                //TODO remember you DON"T use onClick listeners for context menu items
                 return true;
+
             case R.id.btn_recycle_bin:
                 Toast.makeText(MainActivity.this, "recycle", Toast.LENGTH_SHORT).show();
                 return true;
@@ -255,7 +288,6 @@ public class MainActivity extends AppCompatActivity {
                         flashcardSet.add(flashcard);
                         i = flashcardSet.length() - 1;
                         flashcardText.setText(flashcardSet.get(i).getTerm()); //shows last added term
-                        System.out.println("%%%%%%%%%% flashcardSet Size = " + flashcardSet.length());
                     }
                 });
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

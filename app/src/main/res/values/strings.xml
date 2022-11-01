@@ -4,4 +4,6 @@
     <string name="flashcard_label">Current Flashcard</string>
     <string name="create_first">Create a flashcard first.</string>
     <string name="untitled">Untitled</string>
+    <string name="mark_for_study">Mark for Study</string>
+    <string name="delete">Delete</string>
 </resources>
