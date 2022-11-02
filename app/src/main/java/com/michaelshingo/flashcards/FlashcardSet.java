@@ -9,7 +9,23 @@ import java.util.Comparator;
 public class FlashcardSet implements Serializable {
     private ArrayList<Flashcard> flashcardList = new ArrayList<Flashcard>();
     private ArrayList<Flashcard> studiedFlashcards = new ArrayList<>();
+    private ArrayList<Flashcard> recycledFlashcards = new ArrayList<>();
     private String name;
+
+
+    public ArrayList<Flashcard> getRecycledFlashcardList(){
+        return recycledFlashcards;
+    }
+
+
+    public void permamentlyDelete(int i){
+        recycledFlashcards.remove(i);
+    }
+
+    public void restore(int i){
+        flashcardList.add(recycledFlashcards.get(i));
+        recycledFlashcards.remove(i);
+    }
 
     public void sortDesc(){
         if (!flashcardList.isEmpty()) {
@@ -26,6 +42,11 @@ public class FlashcardSet implements Serializable {
         return studiedFlashcards;
     }
 
+    public void deleteStudied(int i){
+        //TODO add this back in later....
+        //recycledFlashcards.add(studiedFlashcards.get(i));
+        studiedFlashcards.remove(i);
+    }
 
     public int getStudiedLength(){
         return studiedFlashcards.size();
@@ -53,6 +74,12 @@ public class FlashcardSet implements Serializable {
 
     public void markAsStudied(int i){
         studiedFlashcards.add(flashcardList.get(i));
+        //flashcardList.remove(i); don't add this here because it's done in textAfterDelete
+    }
+
+    public void remove(int i){ //removes flashcards from list without putting it in the recycle bin
+        flashcardList.remove(i);
+
     }
 
     public void markToStudy(int i){
@@ -68,7 +95,8 @@ public class FlashcardSet implements Serializable {
         return flashcardList.get(index);
     }
 
-    public void remove(int index){
+    public void recycle(int index){
+        recycledFlashcards.add(flashcardList.get(index));
         flashcardList.remove(index);
     }
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/btn_restore"
+        android:title="@string/restore"/>
+    <item
+        android:id="@+id/btn_permanently_delete"
+        android:title="@string/permanently_delete"/>
+
+</menu>

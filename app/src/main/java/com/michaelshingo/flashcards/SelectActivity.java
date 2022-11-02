@@ -91,7 +91,7 @@ public class SelectActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 String currentEncodedSet = null;
                 try {
-                    currentEncodedSet = FlashcardSetEncoder.toString(decodedFlashcardSets.get(i)); //IS THIS CORRECT???
+                    currentEncodedSet = FlashcardSetEncoder.toString(decodedFlashcardSets.get(i));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -301,5 +301,12 @@ public class SelectActivity extends AppCompatActivity {
             }
         });
         }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("RESUMED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        updateListView();
     }
+}
 

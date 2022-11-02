@@ -6,4 +6,7 @@
     <string name="untitled">Untitled</string>
     <string name="mark_for_study">Mark for Study</string>
     <string name="delete">Delete</string>
+    <string name="permanently_delete">Permanently Delete</string>
+    <string name="restore">Restore</string>
+    <string name="add_flashcard">Click the + icon to add a flashcard.</string>
 </resources>

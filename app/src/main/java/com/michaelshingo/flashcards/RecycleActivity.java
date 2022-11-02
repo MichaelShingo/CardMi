@@ -21,40 +21,40 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class StudiedActivity extends AppCompatActivity {
-    private ListView studiedListView;
+public class RecycleActivity extends AppCompatActivity {
+    private ListView recycleListView;
     private FlashcardSet flashcardSet;
-    private FloatingActionButton btn_studied_back;
+    private FloatingActionButton btn_recycle_back;
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.studied_menu, menu);
+        menuInflater.inflate(R.menu.recycle_menu, menu);
     }
 
-
     public void updateListView(){
-        ArrayList<Flashcard> studiedFlashcardList = flashcardSet.getStudiedFlashcardList();
-        ArrayList<String> studiedTermList = new ArrayList<>();
-        ArrayList<String> studiedDefList = new ArrayList<>();
+        ArrayList<Flashcard> recycledFlashcardList = flashcardSet.getRecycledFlashcardList();
+        ArrayList<String> recycledTermList = new ArrayList<>();
+        ArrayList<String> recycledDefList = new ArrayList<>();
 
-        for (Flashcard card:studiedFlashcardList){
-            studiedTermList.add(card.getTerm());
+        for (Flashcard card:recycledFlashcardList){
+            recycledTermList.add(card.getTerm());
         }
-        for (Flashcard card:studiedFlashcardList){
-            studiedDefList.add(card.getDefinition());
+        for (Flashcard card:recycledFlashcardList){
+            recycledDefList.add(card.getDefinition());
         }
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(StudiedActivity.this, android.R.layout.simple_list_item_1, studiedTermList);
-        studiedListView.setAdapter(arrayAdapter);
 
-        registerForContextMenu(studiedListView);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(RecycleActivity.this, android.R.layout.simple_list_item_1, recycledTermList);
+        recycleListView.setAdapter(arrayAdapter);
 
-        studiedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        registerForContextMenu(recycleListView);
+
+        recycleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                studiedListView.showContextMenuForChild(view);
+                recycleListView.showContextMenuForChild(view);
             }
         });
     }
@@ -65,12 +65,12 @@ public class StudiedActivity extends AppCompatActivity {
         int listPosition = info.position;
 
         switch (item.getItemId()) {
-            case R.id.btn_mark_for_study:
-                flashcardSet.markToStudy(listPosition);
+            case R.id.btn_permanently_delete:
+                flashcardSet.permamentlyDelete(listPosition);
                 updateListView();
                 return true;
-            case R.id.btn_delete_studied:
-                flashcardSet.deleteStudied(listPosition);
+            case R.id.btn_restore:
+                flashcardSet.restore(listPosition);
                 updateListView();
                 return true;
             default:
@@ -81,7 +81,7 @@ public class StudiedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_studied);
+        setContentView(R.layout.activity_recycle);
 
         Bundle bundle = getIntent().getExtras();
         int listID = bundle.getInt("id");
@@ -95,24 +95,24 @@ public class StudiedActivity extends AppCompatActivity {
         }
 
         //INSTANTIATION
-        btn_studied_back = findViewById(R.id.btn_studied_back);
-        studiedListView = findViewById(R.id.studiedListView);
+        btn_recycle_back = findViewById(R.id.btn_recycle_back);
+        recycleListView = findViewById(R.id.recycleListView);
 
-        btn_studied_back.setOnClickListener(new View.OnClickListener() {
+        btn_recycle_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle studiedBundle = new Bundle();
-                Intent studiedIntent = new Intent(StudiedActivity.this, MainActivity.class);
-                String studiedEncodedSet = null;
+                Bundle recycleBundle = new Bundle();
+                Intent recycleIntent = new Intent(RecycleActivity.this, MainActivity.class);
+                String recycleEncodedSet = null;
                 try {
-                    studiedEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
+                    recycleEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                studiedBundle.putString("set", studiedEncodedSet);
-                studiedBundle.putInt("id", listID);
-                studiedIntent.putExtras(studiedBundle);
-                startActivity(studiedIntent);
+                recycleBundle.putString("set", recycleEncodedSet);
+                recycleBundle.putInt("id", listID);
+                recycleIntent.putExtras(recycleBundle);
+                startActivity(recycleIntent);
             }
         });
         updateListView();

@@ -8,14 +8,14 @@
         android:id="@+id/toolbar"/>
 
     <ListView
-        android:id="@+id/studiedListView"
+        android:id="@+id/recycleListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/toolbar"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_studied_back"
+        android:id="@+id/btn_recycle_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"

@@ -1,33 +1,19 @@
 package com.michaelshingo.flashcards;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 //import com.michaelshingo.flashcards.OnSwipeTouchListener;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.ContextMenu;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -42,10 +28,6 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private CardView flashcard;
@@ -53,8 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout outerLayout;
     private FloatingActionButton btn_add, btn_edit, btn_delete, btn_back;
     private ImageButton btn_studied;
-    private FlashcardSet flashcardSet = new FlashcardSet("");
+    private FlashcardSet flashcardSet;// = new FlashcardSet("");
     private int i;
+    private int listID;
     private int DURATION1000 = 1000;
     private int DURATIONFLIP = 250;
     private int DURATION100 = 100;
@@ -68,16 +51,12 @@ public class MainActivity extends AppCompatActivity {
         //is this even being triggered when you click the listeview item???
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
-        System.out.println(v.getId());
-        System.out.println("Some kind of contextmenuregistered item was selected..................");
 
 
         if (v.getId() == R.id.btn_overflow) {
             menuInflater.inflate(R.menu.overflow_menu_main, menu); //provide menu from the method parameters
         }
         else if (v.getId() == studiedListView.getItemIdAtPosition(0)) { //it's just a matter of finding the ID of the listview item.....
-            System.out.println("triggered studiedListView contextMenu if statement");
-            System.out.println(studiedListView.getItemIdAtPosition(0));
             menuInflater.inflate(R.menu.studied_menu, menu);
         }
     }
@@ -87,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         if (flashcardSet.length() == 0) {
             Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
         } else {
-            flashcardSet.remove(i);
+            flashcardSet.recycle(i);
 
             if (flashcardSet.length() == 0) {
                 i = 0;
@@ -102,17 +81,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item){
-        //TODO make sure this protects against null values and empty lists
-        //TODO is the database updating when you add things to studied?
         switch (item.getItemId()){
             case R.id.btn_list:
-                Toast.makeText(MainActivity.this, "Show as list", Toast.LENGTH_SHORT).show();
+                Bundle listBundle = new Bundle();
+                Intent listIntent = new Intent(MainActivity.this, ListViewActivity.class);
+                String listEncodedSet = null;
+                try {
+                    listEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                listBundle.putString("set", listEncodedSet);
+                listBundle.putInt("id", listID);
+                listIntent.putExtras(listBundle);
+                startActivity(listIntent);
                 return true;
             case R.id.btn_studied:
-                //bundle the flashcardset item
                 Bundle bundle = new Bundle();
                 Intent intent = new Intent(MainActivity.this, StudiedActivity.class);
                 String currentEncodedSet = null;
@@ -123,39 +109,63 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 bundle.putString("set", currentEncodedSet);
+                bundle.putInt("id", listID);
                 intent.putExtras(bundle);
                 startActivity(intent);
-
-                //TODO remember you DON"T use onClick listeners for context menu items
                 return true;
 
             case R.id.btn_recycle_bin:
-                Toast.makeText(MainActivity.this, "recycle", Toast.LENGTH_SHORT).show();
+                Bundle recycleBundle = new Bundle();
+                Intent recycleIntent = new Intent(MainActivity.this, RecycleActivity.class);
+                String recycleEncodedSet = null;
+                try {
+                    recycleEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                recycleBundle.putString("set", recycleEncodedSet);
+                recycleBundle.putInt("id", listID);
+                recycleIntent.putExtras(recycleBundle);
+                startActivity(recycleIntent);
+
                 return true;
+
             case R.id.btn_sort_asc:
-                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
-                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
-                flashcardSet.sortAsc();
-                i = 0;
-                flashcardText.setText(flashcardSet.get(i).getTerm());
-                //sort the list according to term
-                //reset i to 0
-                //set flashcardText
+                if (flashcardSet.length() == 0){
+                    Toast.makeText(MainActivity.this, R.string.add_flashcard, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
+                    flashcardSet.sortAsc();
+                    i = 0;
+                    flashcardText.setText(flashcardSet.get(i).getTerm());
+                }
                 return true;
             case R.id.btn_sort_desc:
-                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
-                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
-                flashcardSet.sortDesc();
-                i = 0;
-                flashcardText.setText(flashcardSet.get(i).getTerm());
+                if (flashcardSet.length() == 0){
+                    Toast.makeText(MainActivity.this, R.string.add_flashcard, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
+                    flashcardSet.sortDesc();
+                    i = 0;
+                    flashcardText.setText(flashcardSet.get(i).getTerm());
+                }
                 return true;
             case R.id.btn_shuffle:
-                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
-                YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
-                flashcardSet.shuffle();
-                i = 0;
-                flashcardText.setText(flashcardSet.get(i).getTerm());
-                Toast.makeText(MainActivity.this, "shuffle", Toast.LENGTH_SHORT).show();
+                if (flashcardSet.length() == 0){
+                    Toast.makeText(MainActivity.this, R.string.add_flashcard, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
+                    flashcardSet.shuffle();
+                    i = 0;
+                    flashcardText.setText(flashcardSet.get(i).getTerm());
+                }
                 return true;
             default:
                 return true;
@@ -192,7 +202,8 @@ public class MainActivity extends AppCompatActivity {
         //RETRIEVES FLASHCARD SET FORM SELECTACIVITY
         Bundle bundle = getIntent().getExtras();
         String encodedFlashcardSet = bundle.getString("set");
-        int listID = bundle.getInt("id");
+        listID = bundle.getInt("id");
+        int selectedListPosition = bundle.getInt("listPosition");
         try {
             flashcardSet = (FlashcardSet) FlashcardSetEncoder.fromString(encodedFlashcardSet);
         } catch (IOException e) {
@@ -204,13 +215,19 @@ public class MainActivity extends AppCompatActivity {
         //DISPLAY THE FIRST FLASHCARD IF NOT EMPTY
         try {
             if (flashcardSet.length() != 0) {
-                flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
+                if (selectedListPosition >= 0) {
+                    flashcardText.setText(flashcardSet.get(selectedListPosition).getTerm());//shows term selected from listviewActivity
+                    i = selectedListPosition;
+                }
+                else{
+                    flashcardText.setText(flashcardSet.get(0).getTerm()); //shows first term
+                    i = 0;
+                }
             }
         }
         catch (Exception e){
             e.printStackTrace();
         }
-
 
 
         //ON CLICK LISTENERS
@@ -231,9 +248,21 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, R.string.create_first, Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
+                    YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
                     Toast.makeText(MainActivity.this, flashcardSet.get(i).getTerm() + " marked as studied.", Toast.LENGTH_SHORT).show();
                     flashcardSet.markAsStudied(i);
-                    setTextAfterDelete(i);
+                    flashcardSet.remove(i);
+
+                    if (flashcardSet.length() == 0) {
+                        i = 0;
+                        flashcardText.setText(R.string.add_flashcard);
+                    } else if (i > flashcardSet.length() - 1) {
+                        i--;
+                        flashcardText.setText(flashcardSet.get(i).getTerm());
+                    } else {
+                        flashcardText.setText(flashcardSet.get(i).getTerm());
+                    }
                 }
 
             }
@@ -276,15 +305,54 @@ public class MainActivity extends AppCompatActivity {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO currently this saves only changes made to flashcardSet in MainActivity
+                //not those made in StudiedActivity and then passed to MainActivity
                 String updatedEncodedSet = null;
+
+                System.out.println("encoding flashcards: " + flashcardSet.getFlashcardList());
+                System.out.println("encoding studied flashcards: " + flashcardSet.getStudiedFlashcardList());
+
+
+                FlashcardSet testDecodedSet1 = null;
                 try {
                     updatedEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
+                    testDecodedSet1 = (FlashcardSet)FlashcardSetEncoder.fromString(updatedEncodedSet);
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
+
+                System.out.println("This is what was acutally encoded");
+                System.out.println("flashcards: " + testDecodedSet1.getFlashcardList());
+                System.out.println("studied list " + testDecodedSet1.getStudiedFlashcardList());
+
                 DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+                System.out.println("updating index in database" + listID);
                 databaseHelper.update(listID, updatedEncodedSet);
+
+
+                String testEncodedSet = databaseHelper.getAll().get(0);
+                FlashcardSet testDecodedSet = null;
+                try {
+                    testDecodedSet = (FlashcardSet) FlashcardSetEncoder.fromString(testEncodedSet);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("This is what was acutally in the database....");
+                System.out.println("flashcards: " + testDecodedSet.getFlashcardList());
+                System.out.println("studied list" + testDecodedSet.getStudiedFlashcardList());
+                //TODO current understanding is, the udpatedatabase function isn't working properly
+                //because the encoding is working fine
+                //when you add stuff to studied before going into the studied activity, it saves
+                //when you add stuff to studied after going into studied activity, new flashcards do not save
+                //but delete still works
+
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
+
+
             }
         });
 
