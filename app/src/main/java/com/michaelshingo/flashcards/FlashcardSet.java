@@ -43,8 +43,7 @@ public class FlashcardSet implements Serializable {
     }
 
     public void deleteStudied(int i){
-        //TODO add this back in later....
-        //recycledFlashcards.add(studiedFlashcards.get(i));
+        recycledFlashcards.add(studiedFlashcards.get(i));
         studiedFlashcards.remove(i);
     }
 

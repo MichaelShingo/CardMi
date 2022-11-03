@@ -39,7 +39,6 @@ import java.util.List;
 
 //Features to add: sorting, recycle bin for deleted flashcards
 public class SelectActivity extends AppCompatActivity {
-    //TODO center the listview and pick a font
     //TODO reordering and sorting the list??
     //TODO searching the lisT?
     //TODO different color themes in settings
@@ -117,7 +116,6 @@ public class SelectActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int listPosition = info.position;
         int currentID = idArray.get(listPosition);
-        System.out.println("list position = " + listPosition + " currentID = " + currentID);
 
         switch(item.getItemId()){
             case R.id.editName:
@@ -157,13 +155,13 @@ public class SelectActivity extends AppCompatActivity {
                 editSetName.addTextChangedListener(editNameCounter);
 
                 alert.setView(editNameLayout);
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
                 });
 
-                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if (editSetName.length() == 0){
@@ -222,7 +220,7 @@ public class SelectActivity extends AppCompatActivity {
                 btn_add.hide();
                 AlertDialog.Builder alert = new AlertDialog.Builder(SelectActivity.this);
                 final EditText nameText = new EditText(SelectActivity.this);
-                nameText.setHint("Name your flashcard set");
+                nameText.setHint(R.string.name_flashcard);
                 TextView charCount = new TextView(SelectActivity.this);
                 LinearLayout addFlashcardLayout = new LinearLayout(SelectActivity.this);
                 addFlashcardLayout.setOrientation(LinearLayout.VERTICAL);
@@ -256,7 +254,7 @@ public class SelectActivity extends AppCompatActivity {
 
 
                 alert.setView(addFlashcardLayout);
-                alert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                alert.setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         FlashcardSet flashcardSet = new FlashcardSet("");
@@ -271,7 +269,7 @@ public class SelectActivity extends AppCompatActivity {
                         else {
                             flashcardSet.setName(nameText.getText().toString());
                         }
-                        String encodedFlashcardSet = "Untitled";
+                        String encodedFlashcardSet = "Untitled"; //R.string.untitled;
                         try {
                             encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
                         } catch (IOException e) {
@@ -283,7 +281,7 @@ public class SelectActivity extends AppCompatActivity {
                     }
                 });
 
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
@@ -305,7 +303,6 @@ public class SelectActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("RESUMED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         updateListView();
     }
 }

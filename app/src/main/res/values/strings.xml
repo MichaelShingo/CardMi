@@ -9,4 +9,19 @@
     <string name="permanently_delete">Permanently Delete</string>
     <string name="restore">Restore</string>
     <string name="add_flashcard">Click the + icon to add a flashcard.</string>
+    <string name="marked_as_studied">marked as studied.</string>
+    <string name="new_flashcard">New Flashcard</string>
+    <string name="term">term</string>
+    <string name="definition">definition</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_flashcard">Edit Flashcard</string>
+    <string name="swipe_flashcard">Swipe on the flashcard.</string>
+    <string name="name_flashcard">Name your flashcard set.</string>
+    <string name="create">Create</string>
+    <string name="list_view">List View</string>
+    <string name="recycle_bin">Recycle Bin</string>
+    <string name="studied_cards">Studied Cards</string>
+
+
 </resources>

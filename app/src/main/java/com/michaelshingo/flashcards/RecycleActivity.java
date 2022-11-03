@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,8 @@ public class RecycleActivity extends AppCompatActivity {
     private ListView recycleListView;
     private FlashcardSet flashcardSet;
     private FloatingActionButton btn_recycle_back;
+    private int listID;
+    private TextView activityTitleText;
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -84,7 +87,7 @@ public class RecycleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recycle);
 
         Bundle bundle = getIntent().getExtras();
-        int listID = bundle.getInt("id");
+        listID = bundle.getInt("id");
         String encodedFlashcardSet = bundle.getString("set");
         try {
             flashcardSet = (FlashcardSet) FlashcardSetEncoder.fromString(encodedFlashcardSet);
@@ -97,6 +100,9 @@ public class RecycleActivity extends AppCompatActivity {
         //INSTANTIATION
         btn_recycle_back = findViewById(R.id.btn_recycle_back);
         recycleListView = findViewById(R.id.recycleListView);
+        activityTitleText = findViewById(R.id.action_bar_title);
+
+        activityTitleText.setText(R.string.recycle_bin);
 
         btn_recycle_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,5 +122,18 @@ public class RecycleActivity extends AppCompatActivity {
             }
         });
         updateListView();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DatabaseHelper databaseHelper = new DatabaseHelper(RecycleActivity.this);
+        String encodedFlashcardSet = null;
+        try {
+            encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        databaseHelper.update(listID, encodedFlashcardSet);
     }
 }

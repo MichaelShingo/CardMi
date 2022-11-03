@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,13 +23,7 @@ public class ListViewActivity extends AppCompatActivity {
     private FlashcardSet flashcardSet;
     private FloatingActionButton btn_list_back;
     private int listID;
-
-//    @Override
-//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//        super.onCreateContextMenu(menu, v, menuInfo);
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.recycle_menu, menu);
-//    }
+    private TextView activityTitleText;
 
     public void updateListView(){
         ArrayList<Flashcard> listFlashcardList = flashcardSet.getFlashcardList();
@@ -40,8 +35,6 @@ public class ListViewActivity extends AppCompatActivity {
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ListViewActivity.this, android.R.layout.simple_list_item_1, listViewTermsList);
         listViewListView.setAdapter(arrayAdapter);
-
-//        registerForContextMenu(recycleListView);
 
         listViewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -65,25 +58,6 @@ public class ListViewActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public boolean onContextItemSelected(@NonNull MenuItem item) {
-//        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-//        int listPosition = info.position;
-//
-//        switch (item.getItemId()) {
-//            case R.id.btn_permanently_delete:
-//                flashcardSet.permamentlyDelete(listPosition);
-//                updateListView();
-//                return true;
-//            case R.id.btn_restore:
-//                flashcardSet.restore(listPosition);
-//                updateListView();
-//                return true;
-//            default:
-//                return true;
-//        }
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,8 +77,10 @@ public class ListViewActivity extends AppCompatActivity {
         //INSTANTIATION
         btn_list_back = findViewById(R.id.btn_list_back);
         listViewListView = findViewById(R.id.listListView);
+        activityTitleText = findViewById(R.id.action_bar_title);
 
         updateListView();
+        activityTitleText.setText(R.string.list_view);
 
         btn_list_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,5 +100,18 @@ public class ListViewActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DatabaseHelper databaseHelper = new DatabaseHelper(ListViewActivity.this);
+        String encodedFlashcardSet = null;
+        try {
+            encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        databaseHelper.update(listID, encodedFlashcardSet);
     }
 }

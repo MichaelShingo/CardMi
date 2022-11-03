@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout outerLayout;
     private FloatingActionButton btn_add, btn_edit, btn_delete, btn_back;
     private ImageButton btn_studied;
-    private FlashcardSet flashcardSet;// = new FlashcardSet("");
+    private FlashcardSet flashcardSet;
     private int i;
     private int listID;
     private int DURATION1000 = 1000;
@@ -48,10 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        //is this even being triggered when you click the listeview item???
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
-
 
         if (v.getId() == R.id.btn_overflow) {
             menuInflater.inflate(R.menu.overflow_menu_main, menu); //provide menu from the method parameters
@@ -64,13 +62,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void setTextAfterDelete(int index) {
         if (flashcardSet.length() == 0) {
-            Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, R.string.create_first, Toast.LENGTH_SHORT).show();
         } else {
             flashcardSet.recycle(i);
 
             if (flashcardSet.length() == 0) {
                 i = 0;
-                flashcardText.setText("Click the + icon to add a flashcard.");
+                flashcardText.setText(R.string.add_flashcard);
             } else if (i > flashcardSet.length() - 1) {
                 i--;
                 flashcardText.setText(flashcardSet.get(i).getTerm());
@@ -250,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcard);
                     YoYo.with(Techniques.Pulse).duration(DURATION500).playOn(flashcardText);
-                    Toast.makeText(MainActivity.this, flashcardSet.get(i).getTerm() + " marked as studied.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, flashcardSet.get(i).getTerm() + " " + getResources().getString(R.string.marked_as_studied), Toast.LENGTH_SHORT).show();
                     flashcardSet.markAsStudied(i);
                     flashcardSet.remove(i);
 
@@ -272,19 +270,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-                alert.setTitle("New Flashcard");
+                alert.setTitle(R.string.new_flashcard);
                 LinearLayout addLayout = new LinearLayout(MainActivity.this);
                 addLayout.setOrientation(LinearLayout.VERTICAL);
                 final EditText term = new EditText(MainActivity.this);
-                term.setHint("Term");
+                term.setHint(R.string.term);
                 final EditText definition = new EditText(MainActivity.this);
-                definition.setHint("Definition");
+                definition.setHint(R.string.definition);
                 addLayout.addView(term);
                 addLayout.addView(definition);
                 alert.setView(addLayout);
 
                 //CREATES NEW FLASHCARD
-                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int j) {
                         Flashcard flashcard = new Flashcard(term.getText().toString(), definition.getText().toString(), -1);
@@ -293,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                         flashcardText.setText(flashcardSet.get(i).getTerm()); //shows last added term
                     }
                 });
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int j) {
                     }
@@ -305,14 +303,7 @@ public class MainActivity extends AppCompatActivity {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO currently this saves only changes made to flashcardSet in MainActivity
-                //not those made in StudiedActivity and then passed to MainActivity
                 String updatedEncodedSet = null;
-
-                System.out.println("encoding flashcards: " + flashcardSet.getFlashcardList());
-                System.out.println("encoding studied flashcards: " + flashcardSet.getStudiedFlashcardList());
-
-
                 FlashcardSet testDecodedSet1 = null;
                 try {
                     updatedEncodedSet = FlashcardSetEncoder.toString(flashcardSet);
@@ -323,14 +314,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                System.out.println("This is what was acutally encoded");
-                System.out.println("flashcards: " + testDecodedSet1.getFlashcardList());
-                System.out.println("studied list " + testDecodedSet1.getStudiedFlashcardList());
-
                 DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
-                System.out.println("updating index in database" + listID);
                 databaseHelper.update(listID, updatedEncodedSet);
-
 
                 String testEncodedSet = databaseHelper.getAll().get(0);
                 FlashcardSet testDecodedSet = null;
@@ -341,18 +326,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-                System.out.println("This is what was acutally in the database....");
-                System.out.println("flashcards: " + testDecodedSet.getFlashcardList());
-                System.out.println("studied list" + testDecodedSet.getStudiedFlashcardList());
-                //TODO current understanding is, the udpatedatabase function isn't working properly
-                //because the encoding is working fine
-                //when you add stuff to studied before going into the studied activity, it saves
-                //when you add stuff to studied after going into studied activity, new flashcards do not save
-                //but delete still works
-
                 startActivity(new Intent(MainActivity.this, SelectActivity.class));
-
-
             }
         });
 
@@ -367,12 +341,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (flashcardSet.length() == 0){
-                    Toast.makeText(MainActivity.this, "Create a flashcard first.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.create_first, Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Flashcard currentFlashcard = flashcardSet.get(i);
                     AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-                    alert.setTitle("Edit Flashcard");
+                    alert.setTitle(R.string.edit_flashcard);
                     LinearLayout editLayout = new LinearLayout(MainActivity.this);
                     editLayout.setOrientation(LinearLayout.VERTICAL);
                     final EditText term = new EditText(MainActivity.this);
@@ -382,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
                     editLayout.addView(term);
                     editLayout.addView(definition);
                     alert.setView(editLayout);
-                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int j) {
                             currentFlashcard.setTerm(term.getText().toString());
@@ -391,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                             flashcardText.setText(currentFlashcard.getTerm().toString());
                         }
                     });
-                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int j) {
                         }
@@ -416,12 +390,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
             public void onSwipeRight(){
-
                 i--;
                 if (i < 0){
                     i = flashcardSet.length() - 1;
                 }
-
                 YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcardText);
                 YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcard);
@@ -433,7 +405,6 @@ public class MainActivity extends AppCompatActivity {
                 if (i > flashcardSet.length() - 1){
                     i = 0;
                 }
-
                 YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcard);
                 YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcardText);
                 YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcard);
@@ -449,9 +420,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
             public boolean performClick() {
-                Toast.makeText(MainActivity.this, "Swipe on the flashcard.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.swipe_flashcard, Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+        String encodedFlashcardSet = null;
+        try {
+            encodedFlashcardSet = FlashcardSetEncoder.toString(flashcardSet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        databaseHelper.update(listID, encodedFlashcardSet);
+
     }
 }
