@@ -201,8 +201,10 @@ public class SelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        //TODO some issue with this toolbar??
+        //toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
         setContentView(R.layout.activity_select);
 
         //INSTANTIATION

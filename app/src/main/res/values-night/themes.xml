@@ -1,16 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Flashcards" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Flashcards" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/yellowSat</item>
-        <item name="colorPrimaryVariant">@color/yellowSat</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryVariant">@color/brownSat</item>
+        <item name="colorOnPrimary">@color/tan</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/yellowSat</item>
-        <item name="colorSecondaryVariant">@color/yellowSat</item>
+        <item name="colorSecondary">@color/yellowDesat</item>
+        <item name="colorSecondaryVariant">@color/brownDesat</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorSecondary</item>
         <!-- Customize your theme here. -->
     </style>
+
 </resources>

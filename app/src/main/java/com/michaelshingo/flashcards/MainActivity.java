@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.GestureDetector;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         if (v.getId() == R.id.btn_overflow) {
             menuInflater.inflate(R.menu.overflow_menu_main, menu); //provide menu from the method parameters
         }
-        else if (v.getId() == studiedListView.getItemIdAtPosition(0)) { //it's just a matter of finding the ID of the listview item.....
+        else if (v.getId() == studiedListView.getItemIdAtPosition(0)) {
             menuInflater.inflate(R.menu.studied_menu, menu);
         }
     }
@@ -168,6 +169,30 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return true;
         }
+    }
+
+    public void flipFlashcard() {
+        if (flashcardSet.length() == 0){
+        }
+        else if (flashcardText.getText().toString().equals(flashcardSet.get(i).getDefinition())){
+            YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcardText);
+            YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcardText);
+            flashcardText.setText(flashcardSet.get(i).getTerm());
+
+        }
+        else if (flashcardText.getText().toString().equals(flashcardSet.get(i).getTerm())){
+            if (i < 0){
+                i = flashcardSet.length() - 1;
+            }
+            YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcardText);
+            YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).playOn(flashcardText);
+            flashcardText.setText(flashcardSet.get(i).getDefinition());
+        }
+
     }
 
     @Override
@@ -340,90 +365,130 @@ public class MainActivity extends AppCompatActivity {
         btn_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (flashcardSet.length() == 0){
-                    Toast.makeText(MainActivity.this, R.string.create_first, Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    Flashcard currentFlashcard = flashcardSet.get(i);
-                    AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-                    alert.setTitle(R.string.edit_flashcard);
-                    LinearLayout editLayout = new LinearLayout(MainActivity.this);
-                    editLayout.setOrientation(LinearLayout.VERTICAL);
-                    final EditText term = new EditText(MainActivity.this);
-                    term.setText(currentFlashcard.getTerm());
-                    final EditText definition = new EditText(MainActivity.this);
-                    definition.setText(currentFlashcard.getDefinition());
-                    editLayout.addView(term);
-                    editLayout.addView(definition);
-                    alert.setView(editLayout);
-                    alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int j) {
-                            currentFlashcard.setTerm(term.getText().toString());
-                            currentFlashcard.setDefinition(definition.getText().toString());
-                            flashcardSet.update(i, currentFlashcard);
-                            flashcardText.setText(currentFlashcard.getTerm().toString());
-                        }
-                    });
-                    alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int j) {
-                        }
-                    });
-                    alert.show();
-                }
+                editFlashcard();
             }
         });
 
         //SWIPING FUNCTIONALITY
 
+//        flashcardText.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                flipFlashcard();
+//            }
+//        });
+//
+//        flashcard.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                flipFlashcard();
+//            }
+//        });
+
+//        flashcardText.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+//            public void onSwipeTop(){
+//                flipFlashcard();
+//            }
+//            public void onSwipeBottom() {
+//                flipFlashcard();
+//            }
+//            public void onSwipeRight(){
+//                previousFlashcard();
+//            }
+//            public void onSwipeLeft() {
+//                nextFlashcard();
+//            }
+//
+//        });
+
         flashcard.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeTop(){
-                if (i < 0){
-                    i = flashcardSet.length() - 1;
-                }
-                YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideOutUp).duration(DURATIONFLIP).playOn(flashcardText);
-                YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).delay(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideInUp).duration(DURATIONFLIP).delay(DURATIONFLIP).playOn(flashcardText);
-                flashcardText.setText(flashcardSet.get(i).getDefinition());
-
+                flipFlashcard();
             }
             public void onSwipeRight(){
-                i--;
-                if (i < 0){
-                    i = flashcardSet.length() - 1;
-                }
-                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcardText);
-                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcardText);
-                flashcardText.setText(flashcardSet.get(i).getTerm());
+                previousFlashcard();
             }
             public void onSwipeLeft() {
-                i++;
-                if (i > flashcardSet.length() - 1){
-                    i = 0;
-                }
-                YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcardText);
-                YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcardText);
-                flashcardText.setText(flashcardSet.get(i).getTerm());
+                nextFlashcard();
             }
             public void onSwipeBottom() {
-                YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideOutDown).duration(DURATIONFLIP).playOn(flashcardText);
-                YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcard);
-                YoYo.with(Techniques.SlideInDown).duration(DURATIONFLIP).playOn(flashcardText);
-                flashcardText.setText(flashcardSet.get(i).getTerm());
-
+                flipFlashcard();
             }
-            public boolean performClick() {
-                Toast.makeText(MainActivity.this, R.string.swipe_flashcard, Toast.LENGTH_SHORT).show();
-                return true;
+            public void onClick(){
+                flipFlashcard();
+            }
+            public void onLongClick(){
+                editFlashcard();
             }
         });
+    }
+
+    private void editFlashcard() {
+        if (flashcardSet.length() == 0){
+            Toast.makeText(MainActivity.this, R.string.create_first, Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Flashcard currentFlashcard = flashcardSet.get(i);
+            AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+            alert.setTitle(R.string.edit_flashcard);
+            LinearLayout editLayout = new LinearLayout(MainActivity.this);
+            editLayout.setOrientation(LinearLayout.VERTICAL);
+            final EditText term = new EditText(MainActivity.this);
+            term.setText(currentFlashcard.getTerm());
+            final EditText definition = new EditText(MainActivity.this);
+            definition.setText(currentFlashcard.getDefinition());
+            editLayout.addView(term);
+            editLayout.addView(definition);
+            alert.setView(editLayout);
+            alert.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int j) {
+                    currentFlashcard.setTerm(term.getText().toString());
+                    currentFlashcard.setDefinition(definition.getText().toString());
+                    flashcardSet.update(i, currentFlashcard);
+                    flashcardText.setText(currentFlashcard.getTerm().toString());
+                }
+            });
+            alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int j) {
+                }
+            });
+            alert.show();
+        }
+    }
+
+    private void previousFlashcard() {
+        if (flashcardSet.length() == 0){
+        }
+        else{
+            i--;
+            if (i < 0){
+                i = flashcardSet.length() - 1;
+            }
+            YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideOutLeft).duration(DURATIONFLIP).playOn(flashcardText);
+            YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideInLeft).duration(DURATIONFLIP).playOn(flashcardText);
+            flashcardText.setText(flashcardSet.get(i).getTerm());
+        }
+    }
+
+    private void nextFlashcard() {
+        if (flashcardSet.length() == 0){
+        }
+        else{
+            i++;
+            if (i > flashcardSet.length() - 1){
+                i = 0;
+            }
+            YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideOutRight).duration(DURATIONFLIP).playOn(flashcardText);
+            YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcard);
+            YoYo.with(Techniques.SlideInRight).duration(DURATIONFLIP).playOn(flashcardText);
+            flashcardText.setText(flashcardSet.get(i).getTerm());
+        }
+
     }
 
     @Override
