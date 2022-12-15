@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//Features to add: sorting, recycle bin for deleted flashcards
 public class SelectActivity extends AppCompatActivity {
     //TODO reordering and sorting the list??
     //TODO searching the lisT?
@@ -200,15 +199,9 @@ public class SelectActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
-
-        //TODO some issue with this toolbar??
-        //toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
         setContentView(R.layout.activity_select);
 
         //INSTANTIATION
-
 
         FloatingActionButton btn_add = findViewById(R.id.addSet); //name this variable better...
         updateListView();
